@@ -31,9 +31,8 @@ async function scrapeLinksFromPage(pageUrl, selector) {
   const response = await fetch(pageUrl);
   const body = await response.text();
   const dom = new JSDOM(body);
-  const elements = dom.window.document.querySelectorAll(selector);
-  let links = Array.from(elements).map((element) => element.href);
-  links = Array.from(new Set(links));
+  let page = JSON.parse(Array.from(dom.window.document.querySelectorAll("#schema\\:music-playlist"))[0].textContent);
+  let links = page.track.map((elem) => elem.url);
   return links;
 }
 
