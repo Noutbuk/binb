@@ -12,8 +12,7 @@
     "90er",
     "2000er",
     "2010er",
-    "2020er",
-    "boybands"
+    "2020er"
   ],
   "songs": {
     "latest-pop": {
@@ -218,27 +217,6 @@
         "https://music.apple.com/de/song/vermissen-feat-henning-may/1460696803",
         "https://music.apple.com/de/song/bad-guy/1450695739",
         "https://music.apple.com/us/song/ich-hass-dich/1651865547"
-      ]
-    },
-    "boybands": {
-      "songsPerArtistCount": 3,
-      "songsPerArtistSort": "popular",
-      "artistsFromPlaylist": [
-      ],
-      "songsFromPlaylist": [
-        "https://music.apple.com/de/playlist/boy-band-cardio/pl.017aa72e87fd4084a0ce465549880886",
-        "https://music.apple.com/de/playlist/westlife-essentials/pl.1f1d1cc0f31b44a1ae25dfce75e0c356",
-        "https://music.apple.com/de/playlist/boyzone-essentials/pl.30969fa9ee194dffb3db4baea1b4438d",
-        "https://music.apple.com/de/playlist/take-that-essentials/pl.7707aa916a3d4d0ba6adf0357ba34e2b",
-        "https://music.apple.com/de/playlist/nsync-essentials/pl.7b5124c967c7451694effd516ad93e11",
-        "https://music.apple.com/de/playlist/backstreet-boys-essentials/pl.331a9530925443f5b96f05389a05d62c",
-        "https://music.apple.com/de/playlist/one-direction-essentials/pl.134ef3b46d32414e9b4b5a995a2f3ea7",
-        "https://music.apple.com/de/playlist/jonas-brothers-essentials/pl.82d536d1c8124d1fac67073a4bcc24b9"
-
-      ],
-      "artists": [
-      ],
-      "songs": [
       ]
     }
   },
