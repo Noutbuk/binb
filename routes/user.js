@@ -1,7 +1,7 @@
 'use strict';
 
 const crypto = require('crypto');
-const { usersClient } = require('../lib/redis-clients');
+const dataService = require('../lib/data-service');
 const http = require('http');
 const mailer = require('../lib/email/mailer');
 const rooms = require('../config').rooms;
@@ -22,13 +22,11 @@ for (let i = 0; i < rooms.length; i++) {
  */
 
 exports.leaderboards = function (req, res, next) {
-  usersClient.zrange(
-    ['users', 0, 29, 'rev', 'withscores'],
-    function (err, pointsresults) {
+  dataService.users.getSortedRange('users', 0, 29, function (err, pointsresults) {
       if (err) {
         return next(err);
       }
-      usersClient.sort(utils.sortParams(0), function (err, timesresults) {
+      dataService.users.sortKeys('users', utils.sortParams(0), function (err, timesresults) {
         if (err) {
           return next(err);
         }
@@ -55,9 +53,7 @@ exports.sliceLeaderboard = function (req, res, next) {
   }
   const end = begin + 29;
   if (by === 'points') {
-    usersClient.zrange(
-      ['users', begin, end, 'rev', 'withscores'],
-      function (err, results) {
+    dataService.users.getSortedRange('users', begin, end, function (err, results) {
         if (err) {
           return next(err);
         }
@@ -66,7 +62,7 @@ exports.sliceLeaderboard = function (req, res, next) {
     );
     return;
   }
-  usersClient.sort(utils.sortParams(begin), function (err, results) {
+  dataService.users.sortKeys('users', utils.sortParams(begin), function (err, results) {
     if (err) {
       return next(err);
     }
@@ -109,8 +105,7 @@ exports.validateChangePasswd = function (req, res, next) {
 };
 
 exports.checkOldPasswd = function (req, res, next) {
-  const key = 'user:' + req.session.user;
-  usersClient.hmget([key, 'salt', 'password'], function (err, data) {
+  dataService.users.getUserFields(req.session.user, ['salt', 'password'], function (err, data) {
     if (err) {
       return next(err);
     }
@@ -140,10 +135,7 @@ exports.changePasswd = function (req, res, next) {
     .update(salt + req.body.newpassword)
     .digest('hex');
 
-  usersClient.hset(
-    key,
-    ...Object.entries({ salt: salt, password: digest }),
-    function (err) {
+  dataService.users.setUserFields(user, { salt: salt, password: digest }, function (err) {
       if (err) {
         return next(err);
       }
@@ -185,7 +177,7 @@ exports.validateLogin = function (req, res, next) {
 
 exports.checkUser = function (req, res, next) {
   const key = 'user:' + req.body.username;
-  usersClient.exists([key], function (err, exists) {
+  dataService.users.userExists(key.replace('user:', ''), function (err, exists) {
     if (err) {
       return next(err);
     }
@@ -202,7 +194,7 @@ exports.checkUser = function (req, res, next) {
 
 exports.authenticate = function (req, res, next) {
   const key = 'user:' + req.body.username;
-  usersClient.hmget([key, 'salt', 'password'], function (err, data) {
+  dataService.users.getUserFields(key.replace('user:', ''), ['salt', 'password'], function (err, data) {
     if (err) {
       return next(err);
     }
@@ -291,7 +283,7 @@ exports.validateSignUp = function (req, res, next) {
 
 exports.userExists = function (req, res, next) {
   const key = 'user:' + req.body.username;
-  usersClient.exists([key], function (err, exists) {
+  dataService.users.userExists(key.replace('user:', ''), function (err, exists) {
     if (err) {
       return next(err);
     }
@@ -306,7 +298,7 @@ exports.userExists = function (req, res, next) {
 
 exports.emailExists = function (req, res, next) {
   const key = 'email:' + req.body.email;
-  usersClient.exists([key], function (err, exists) {
+  dataService.users.userExists(key.replace('user:', ''), function (err, exists) {
     if (err) {
       return next(err);
     }
@@ -334,7 +326,7 @@ exports.createAccount = function (req, res, next) {
   delete req.session.oldvalues;
 
   // Add new user in the db
-  const multi = usersClient.multi();
+  const multi = dataService.users.multi();
   multi.hset(userkey, ...Object.entries(user));
   multi.set(mailkey, userkey);
   multi.zadd('users', 0, req.body.username);
@@ -382,7 +374,7 @@ exports.validateRecoverPasswd = function (req, res, next) {
 
 exports.sendEmail = function (req, res, next) {
   const key = 'email:' + req.body.email;
-  usersClient.get([key], function (err, data) {
+  dataService.users.getToken(key.replace('token:', ''), function (err, data) {
     if (err) {
       return next(err);
     }
@@ -392,7 +384,7 @@ exports.sendEmail = function (req, res, next) {
       // Email exists, generate a secure random token
       const token = crypto.randomBytes(48).toString('hex');
       // Token expires after 4 hours
-      usersClient.setex(['token:' + token, 14400, data], function (err) {
+      dataService.users.setToken(token, 14400, data, function (err) {
         if (err) {
           return next(err);
         }
@@ -445,22 +437,19 @@ exports.resetPasswd = function (req, res, next) {
   }
 
   const key = 'token:' + req.query.token;
-  usersClient.get([key], function (err, user) {
+  dataService.users.getToken(key.replace('token:', ''), function (err, user) {
     if (err) {
       return next(err);
     }
     if (user) {
-      usersClient.del(key); // Delete the token
+      dataService.users.deleteToken(key.replace('token:', '')); // Delete the token
       const salt = crypto.randomBytes(6).toString('base64');
       const digest = crypto
         .createHash('sha256')
         .update(salt + req.body.password)
         .digest('hex');
 
-      usersClient.hset(
-        user,
-        ...Object.entries({ salt: salt, password: digest }),
-        function (err) {
+      dataService.users.setUserFields(user, { salt: salt, password: digest }, function (err) {
           if (err) {
             return next(err);
           }
@@ -484,12 +473,12 @@ exports.resetPasswd = function (req, res, next) {
 
 exports.profile = function (req, res, next) {
   const key = 'user:' + req.params.username;
-  usersClient.exists([key], function (err, exists) {
+  dataService.users.userExists(key.replace('user:', ''), function (err, exists) {
     if (err) {
       return next(err);
     }
     if (exists) {
-      usersClient.hgetall([key], function (err, user) {
+      dataService.users.getUserData(key.replace('user:', ''), function (err, user) {
         if (err) {
           return next(err);
         }

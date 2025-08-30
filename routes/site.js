@@ -2,7 +2,7 @@
 
 const Captcha = require('../lib/captcha');
 const config = require('../config');
-const { songsClient } = require('../lib/redis-clients');
+const dataService = require('../lib/data-service');
 const http = require('http');
 const parallel = require('async/parallel');
 const randInt = require('../lib/prng').randInt;
@@ -16,11 +16,16 @@ const rooms = require('../lib/rooms').rooms;
 const subTask = function (genre) {
   return function (callback) {
     const index = randInt(rooms[genre].trackscount);
-    songsClient.zrange([genre, index, index], function (err, res) {
+    dataService.songs.getRoomTrackByIndex(genre, index, function (err, res) {
       if (err) {
         return callback(err);
       }
-      songsClient.hget(['song:' + res[0], 'artworkUrl100'], callback);
+      dataService.songs.getSongMetadata(res[0], ['artworkUrl100'], function (err, data) {
+        if (err) {
+          return callback(err);
+        }
+        callback(null, data[0]); // getSongMetadata returns array for specific fields
+      });
     });
   };
 };

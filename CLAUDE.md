@@ -19,6 +19,17 @@ npm start                     # Start the application server (runs on port 8138)
 ### Data Import
 The `npm run import-data` command scrapes Apple Music playlists defined in `config.json` and populates Redis with track data. This must be run at least once before the game can function.
 
+### Testing & Debugging
+The preferred method for testing and debugging the application is through **Playwright MCP integration**. This provides comprehensive browser automation capabilities for:
+
+- **Visual testing**: Navigate to `http://localhost:8138/` to verify UI functionality
+- **Interactive debugging**: Click elements, fill forms, and test user workflows
+- **Error verification**: Check for JavaScript errors, network issues, and rendering problems
+- **Cross-browser testing**: Test functionality across different browser environments
+- **Screenshot capture**: Document issues or verify fixes visually
+
+Use Playwright commands to systematically test the application rather than manual browser testing. This ensures consistent, repeatable testing and better issue identification.
+
 ## Architecture
 
 ### Core Application Structure
