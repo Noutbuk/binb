@@ -12,8 +12,11 @@ const secret = process.env.SITE_SECRET || 'shhhh, very secret';
 const cookieParser = require('cookie-parser')(secret);
 const site = require('./routes/site');
 const urlencoded = require('body-parser').urlencoded;
+const json = require('body-parser').json;
 const user = require('./routes/user');
+const admin = require('./routes/admin');
 const { usersClient } = require('./lib/redis-clients');
+const { addAdminStatus } = require('./lib/middleware/admin-auth');
 
 /**
  * Setting up Express.
@@ -31,6 +34,7 @@ app.use('/static', express.static(pub, { maxAge: 2419200000 })); // 4 weeks = 24
 app.use(favicon(pub + '/img/favicon.ico', { maxAge: 2419200000 }));
 app.use(banHandler);
 app.use(urlencoded({ extended: false }));
+app.use(json());
 app.use(cookieParser);
 app.use(
   session({
@@ -47,7 +51,11 @@ app.use(
   })
 );
 
+// Add admin status to all requests
+//app.use(addAdminStatus);
+
 // Routes
+app.use('/admin', admin);
 app.get('/', site.home);
 app.get('/artworks', site.artworks);
 app.get('/changepasswd', site.validationErrors, site.changePasswd);

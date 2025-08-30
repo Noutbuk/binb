@@ -1,0 +1,193 @@
+extends layout
+
+block title
+  title Room: #{roomName} - binb
+
+block sections
+  .hero-unit
+    h1 Room: #{roomName}
+    p #{roomMetadata.description || 'No description'}
+    .btn-group
+      button.btn.btn-primary#add-song-btn Add Song
+      button.btn.btn-info#import-playlist-btn Import Playlist
+      button.btn.btn-warning#bulk-actions-btn Bulk Actions
+
+  .row
+    .span3
+      .well
+        h3 Room Info
+        dl
+          dt Status
+          dd
+            if roomMetadata.active
+              span.label.label-success Active
+            else
+              span.label.label-warning Inactive
+          dt Songs
+          dd #{pagination.total}
+          dt Created
+          dd #{new Date(roomMetadata.createdAt).toLocaleDateString()}
+          dt Created By
+          dd #{roomMetadata.createdBy}
+          dt Updated
+          dd #{new Date(roomMetadata.updatedAt).toLocaleDateString()}
+          dt Updated By
+          dd #{roomMetadata.updatedBy}
+        
+        button.btn.btn-block.btn-info#edit-room-btn Edit Room Info
+
+    .span9
+      .well
+        .row-fluid
+          .span6
+            input#search-songs.input-large(type="text", placeholder="Search songs in room...")
+          .span6.text-right
+            span Showing #{((pagination.page - 1) * pagination.limit) + 1} - #{Math.min(pagination.page * pagination.limit, pagination.total)} of #{pagination.total}
+
+      if songs && songs.length > 0
+        table.table.table-striped#songs-table
+          thead
+            tr
+              th
+                input#select-all(type="checkbox")
+              th Artwork
+              th Artist
+              th Title
+              th Actions
+          tbody
+            each song in songs
+              tr(data-song-id=song.id)
+                td
+                  input.song-checkbox(type="checkbox", value=song.id)
+                td
+                  if song.artworkUrl60
+                    img.artwork(src=song.artworkUrl60, width="40", height="40")
+                  else
+                    .artwork-placeholder 🎵
+                td #{song.artistName}
+                td #{song.trackName}
+                td
+                  .btn-group
+                    if song.previewUrl
+                      button.btn.btn-mini.btn-info.preview-btn(data-preview=song.previewUrl) Preview
+                    if song.trackViewUrl
+                      a.btn.btn-mini.btn-success(href=song.trackViewUrl, target="_blank") iTunes
+                    button.btn.btn-mini.btn-warning.edit-song-btn(data-song-id=song.id) Edit
+                    button.btn.btn-mini.btn-danger.delete-song-btn(data-song-id=song.id) Delete
+
+        // Pagination
+        if pagination.totalPages > 1
+          .pagination.pagination-centered
+            ul
+              if pagination.page > 1
+                li
+                  a(href=`?page=${pagination.page - 1}`) «
+              else
+                li.disabled
+                  span «
+              
+              - var startPage = Math.max(1, pagination.page - 2)
+              - var endPage = Math.min(pagination.totalPages, pagination.page + 2)
+              
+              if startPage > 1
+                li
+                  a(href="?page=1") 1
+                if startPage > 2
+                  li.disabled
+                    span ...
+              
+              - for (var i = startPage; i <= endPage; i++)
+                if i === pagination.page
+                  li.active
+                    span #{i}
+                else
+                  li
+                    a(href=`?page=${i}`) #{i}
+              
+              if endPage < pagination.totalPages
+                if endPage < pagination.totalPages - 1
+                  li.disabled
+                    span ...
+                li
+                  a(href=`?page=${pagination.totalPages}`) #{pagination.totalPages}
+              
+              if pagination.page < pagination.totalPages
+                li
+                  a(href=`?page=${pagination.page + 1}`) »
+              else
+                li.disabled
+                  span »
+      else
+        .alert.alert-info
+          strong No songs in this room.
+          p Add some songs to get started!
+
+  // Modals
+  #addSongModal.modal.hide.fade
+    .modal-header
+      button.close(type="button", data-dismiss="modal") ×
+      h3 Add Song
+    .modal-body
+      .tabbable
+        ul.nav.nav-tabs
+          li.active
+            a(href="#search-tab", data-toggle="tab") Search Apple Music
+          li
+            a(href="#manual-tab", data-toggle="tab") Manual Entry
+        .tab-content
+          #search-tab.tab-pane.active
+            .control-group
+              input#song-search(type="text", placeholder="Search for songs...", class="input-large")
+              button.btn.btn-primary#search-btn Search
+            #search-results
+          #manual-tab.tab-pane
+            form#manualSongForm
+              .control-group
+                label Track ID (iTunes)
+                input(type="number", name="trackId", required)
+              .control-group
+                label Artist Name
+                input(type="text", name="artistName", required)
+              .control-group
+                label Track Name
+                input(type="text", name="trackName", required)
+              .control-group
+                label iTunes URL
+                input(type="url", name="trackViewUrl")
+              .control-group
+                label Preview URL
+                input(type="url", name="previewUrl")
+    .modal-footer
+      button.btn(data-dismiss="modal") Cancel
+
+  #importPlaylistModal.modal.hide.fade
+    .modal-header
+      button.close(type="button", data-dismiss="modal") ×
+      h3 Import from Apple Music Playlist
+    .modal-body
+      form#importPlaylistForm
+        .control-group
+          label Apple Music Playlist URL
+          input#playlist-url(type="url", required, placeholder="https://music.apple.com/...")
+        .control-group
+          label.checkbox Include additional songs from artists in playlist
+            input#include-artist-songs(type="checkbox")
+        .control-group#artist-options(style="display: none;")
+          label Songs per artist
+          select#songs-per-artist
+            option(value="1") 1 song
+            option(value="3") 3 songs
+            option(value="5") 5 songs
+          label Sort by
+          select#sort-by
+            option(value="popular") Most Popular
+            option(value="recent") Most Recent
+        #import-progress(style="display: none;")
+          .progress.progress-striped.active
+            .bar
+          p#progress-text Preparing import...
+    .modal-footer
+      button.btn(data-dismiss="modal") Cancel
+      button.btn.btn-primary#import-submit Import Songs
+
+  audio#preview-audio(controls, style="display: none;")

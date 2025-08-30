@@ -1,0 +1,26 @@
+extends ../layout
+
+block append head
+  link(href="/static/css/style.css", rel="stylesheet")
+
+block nav
+  ul.nav
+    li
+      a(href="/") ← Back to Game
+    li
+      a(href="/admin") Dashboard
+    li
+      a(href="/admin/rooms") Rooms
+    li.divider-vertical
+    li.dropdown
+      a.dropdown-toggle(href="#", data-toggle="dropdown")
+        | Admin
+        b.caret
+      ul.dropdown-menu
+        li
+          a(href="/logout") Logout
+
+block scripts
+  script(src="//cdn.jsdelivr.net/jquery/3/jquery.min.js")
+  script(src="/static/js/bootstrap.min.js")
+  script(src="/static/js/admin.js")

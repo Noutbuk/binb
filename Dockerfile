@@ -10,40 +10,57 @@ WORKDIR /app
 # Set production environment
 ENV NODE_ENV=production
 
+# Install redis-tools for Redis connectivity checks (needed for both dev and prod)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    redis-tools \
+    curl \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
 # Throw-away build stage to reduce size of final image
 FROM base as build
 
 # Install packages needed to build node modules
-RUN apt-get update -qq
-
-# RUN apt-get update -qq && \
-#     apt-get install -y python-is-python3 pkg-config build-essential 
+RUN apt-get update -qq && \
+    apt-get install -y python3 pkg-config build-essential && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
 # Install node modules
-COPY --link package.json .
-RUN npm install --production=false
+COPY --link package.json package-lock.json* ./
+RUN npm ci --only=production && npm cache clean --force
 
 # Copy application code
 COPY --link . .
 
-# Remove development dependencies
-RUN npm prune --production
-
+# Build the application
+RUN npm run minify
 
 # Final stage for app image
 FROM base
 
+# Install additional runtime dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    fontconfig && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
+    fontconfig \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
 # Copy built application
 COPY --from=build /app /app
 
-RUN npm run minify
+# Add Docker scripts
+ADD scripts/healthcheck.sh /app/healthcheck.sh
+ADD scripts/docker-entrypoint.sh /app/docker-entrypoint.sh
 
-# Start the server by default, this can be overwritten at runtime
-# CMD [ "npm", "run", "start" ]
-CMD npm run import-data; npm run start
+# Make scripts executable
+RUN chmod +x /app/healthcheck.sh /app/docker-entrypoint.sh
+
+# Add healthcheck
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+    CMD /app/healthcheck.sh
+
+# Expose port
+EXPOSE 8138
+
+# Start the server
+CMD ["/app/docker-entrypoint.sh"]

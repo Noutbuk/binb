@@ -1,8 +1,12 @@
 db/
 node_modules/
 .DS_Store
+public/js/admin.min.js
 public/js/app.min.js
 public/js/home.min.js
 public/js/leaderboards.min.js
 public/js/primus.min.js
 .vscode/
+CLAUDE.md
+.claude
+.env
