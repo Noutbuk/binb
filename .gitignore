@@ -9,3 +9,4 @@ public/js/primus.min.js
 .vscode/
 .claude
 .env
+.playwright-mcp
