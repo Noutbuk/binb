@@ -8,6 +8,7 @@ const parallel = require('async/parallel');
 const randInt = require('../lib/prng').randInt;
 const randomSlogan = require('../lib/utils').randomSlogan;
 const rooms = require('../lib/rooms').rooms;
+const roomManager = require('../lib/services/room-manager');
 
 /**
  * Generate a sub-task.
@@ -64,12 +65,27 @@ exports.changePasswd = function (req, res) {
   });
 };
 
-exports.home = function (req, res) {
-  res.render('home', {
-    loggedin: req.session.user,
-    rooms: config.rooms,
-    slogan: randomSlogan()
-  });
+exports.home = async function (req, res) {
+  try {
+    // Get actual rooms from Redis instead of static config
+    const allRooms = await roomManager.getAllRooms();
+    const activeRooms = allRooms.filter(room => room.active);
+    const roomNames = activeRooms.map(room => room.name);
+    
+    res.render('home', {
+      loggedin: req.session.user,
+      rooms: roomNames,
+      slogan: randomSlogan()
+    });
+  } catch (error) {
+    console.error('Error loading rooms:', error);
+    // Fallback to empty rooms array if there's an error
+    res.render('home', {
+      loggedin: req.session.user,
+      rooms: [],
+      slogan: randomSlogan()
+    });
+  }
 };
 
 exports.login = function (req, res) {
@@ -96,14 +112,25 @@ exports.resetPasswd = function (req, res) {
   });
 };
 
-exports.room = function (req, res) {
-  if (~config.rooms.indexOf(req.params.room)) {
-    return res.render('room', {
-      loggedin: req.session.user,
-      roomname: req.params.room,
-      rooms: config.rooms,
-      slogan: randomSlogan()
-    });
+exports.room = async function (req, res) {
+  try {
+    // Check if room actually exists in Redis
+    const roomExists = await roomManager.roomExists(req.params.room);
+    if (roomExists) {
+      // Get all rooms for navigation
+      const allRooms = await roomManager.getAllRooms();
+      const activeRooms = allRooms.filter(room => room.active);
+      const roomNames = activeRooms.map(room => room.name);
+      
+      return res.render('room', {
+        loggedin: req.session.user,
+        roomname: req.params.room,
+        rooms: roomNames,
+        slogan: randomSlogan()
+      });
+    }
+  } catch (error) {
+    console.error('Error checking room existence:', error);
   }
   res.status(404).send(http.STATUS_CODES[404]);
 };

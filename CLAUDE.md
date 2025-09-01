@@ -88,6 +88,26 @@ The application uses a room-based architecture where each room represents a diff
 - All Redis operations use lowercase method names and array syntax: `client.hmget([key, field1, field2], callback)`
 - The data service layer (`lib/data-service.js`) provides promisified wrappers around these legacy methods
 
+#### Redis Key Structure
+- **Room metadata**: `room:metadata:roomName` - Contains room configuration (description, active status, timestamps)
+- **Room songs**: `roomName` - Sorted set containing track IDs and scores
+- **Song metadata**: `song:trackId` - Hash containing track details (artist, title, preview URL, artwork)
+- **User data**: `user:username` - Hash containing user account information
+- **User emails**: `email:address` - Maps email addresses to usernames
+- **Session data**: `sess:sessionId` - Express session storage
+- **Bans**: `ban:ipAddress` - IP ban information with TTL
+
+#### Redis Debugging
+Use `redis-cli` to inspect and debug Redis data:
+```bash
+redis-cli keys "*"                           # List all keys
+redis-cli keys "room:metadata:*"             # List all room metadata
+redis-cli hgetall "room:metadata:roomName"   # View room metadata
+redis-cli zrange "roomName" 0 -1 WITHSCORES  # View room songs with scores
+redis-cli hgetall "song:trackId"             # View song metadata
+redis-cli hgetall "user:username"            # View user data
+```
+
 ### Code Changes Impact
 - **Important**: After making changes to JavaScript files, restart the server with `npm run local:start` to see changes
 - The application caches compiled assets, so changes may not be visible until restart
