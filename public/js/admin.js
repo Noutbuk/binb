@@ -338,18 +338,33 @@ function displaySearchResults(songs) {
 }
 
 function addSongToRoom(roomName, songData) {
+  var button = $(`.add-song-result[data-track-id="${songData.trackId}"]`);
+  var originalText = button.text();
+  
+  button.prop('disabled', true).text('Adding...');
+  
   $.ajax({
     url: `/admin/api/rooms/${roomName}/songs`,
     method: 'POST',
     data: JSON.stringify(songData),
     contentType: 'application/json',
     success: function(data) {
-      $('#addSongModal').modal('hide');
-      location.reload();
+      button.removeClass('btn-primary').addClass('btn-success').text('Added!');
+      setTimeout(function() {
+        button.prop('disabled', false).removeClass('btn-success').addClass('btn-primary').text(originalText);
+      }, 2000);
     },
     error: function(xhr) {
+      button.prop('disabled', false).text(originalText);
       var error = xhr.responseJSON ? xhr.responseJSON.error : 'Error adding song';
-      alert('Error: ' + error);
+      if (error.includes('already exists')) {
+        button.removeClass('btn-primary').addClass('btn-warning').text('Already added');
+        setTimeout(function() {
+          button.removeClass('btn-warning').addClass('btn-primary').text(originalText);
+        }, 2000);
+      } else {
+        alert('Error: ' + error);
+      }
     }
   });
 }

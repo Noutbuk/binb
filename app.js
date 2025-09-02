@@ -91,13 +91,20 @@ app.use(errorHandler);
  * Setting up the rooms.
  */
 
-require('./lib/rooms')({
-  parser: cookieParser,
-  server: server,
-  sessionstore: sessionstore
-});
+async function initializeServer() {
+  await require('./lib/rooms')({
+    parser: cookieParser,
+    server: server,
+    sessionstore: sessionstore
+  });
 
-// Begin accepting connections
-server.listen(port, function () {
-  console.info('binb server listening on port ' + port);
+  // Begin accepting connections
+  server.listen(port, function () {
+    console.info('binb server listening on port ' + port);
+  });
+}
+
+initializeServer().catch(error => {
+  console.error('Failed to initialize server:', error);
+  process.exit(1);
 });
