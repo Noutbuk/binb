@@ -25,23 +25,6 @@ jobs:
     - name: Install Playwright Browsers
       run: npx playwright install --with-deps
 
-    - name: Setup test environment
-      run: |
-        # Create .env.local for tests
-        echo "NODE_ENV=test" > .env.local
-        echo "PORT=8138" >> .env.local
-        echo "REDIS_URL=redis://localhost:6379" >> .env.local
-        
-        # Setup test data
-        npm run minify
-        node -e "
-        const setup = require('./tests/setup/global-setup.js');
-        setup().catch(err => {
-          console.error('Setup failed:', err);
-          process.exit(1);
-        });
-        "
-
     - name: Run Playwright tests
       run: npm run test:full
 
