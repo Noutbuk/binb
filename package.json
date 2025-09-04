@@ -15,7 +15,7 @@
     "admin:setup": "node scripts/setup-admin.js setup",
     "admin:list": "node scripts/setup-admin.js list",
     "admin:promote": "node scripts/setup-admin.js promote",
-    "local:redis": "docker compose -f docker-compose.local.yml up -d",
+    "local:redis": "docker compose -f docker-compose.local.yml up",
     "local:redis-stop": "docker compose -f docker-compose.local.yml down",
     "local:redis-logs": "docker compose -f docker-compose.local.yml logs -f",
     "local:start": "NODE_ENV=development node --env-file=.env.local app.js",
