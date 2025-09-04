@@ -152,6 +152,68 @@ function initRoomDetails() {
   // Select all checkbox
   $('#select-all').change(function() {
     $('.song-checkbox').prop('checked', $(this).is(':checked'));
+    updateBulkActionsState();
+  });
+
+  // Individual song checkboxes
+  $(document).on('change', '.song-checkbox', function() {
+    updateBulkActionsState();
+    
+    // Update select-all state
+    var totalCheckboxes = $('.song-checkbox').length;
+    var checkedCheckboxes = $('.song-checkbox:checked').length;
+    
+    if (checkedCheckboxes === totalCheckboxes) {
+      $('#select-all').prop('checked', true);
+      $('#select-all').prop('indeterminate', false);
+    } else if (checkedCheckboxes === 0) {
+      $('#select-all').prop('checked', false);
+      $('#select-all').prop('indeterminate', false);
+    } else {
+      $('#select-all').prop('checked', false);
+      $('#select-all').prop('indeterminate', true);
+    }
+  });
+
+  // Bulk actions
+  $('#bulk-actions-btn').click(function() {
+    var selectedCount = $('.song-checkbox:checked').length;
+    if (selectedCount === 0) {
+      alert('Please select at least one song');
+      return;
+    }
+    
+    $('#selectedSongsCount').text(`${selectedCount} song(s) selected`);
+    $('#bulkActionsModal').modal('show');
+  });
+
+  // Bulk action radio buttons
+  $('input[name="bulkAction"]').change(function() {
+    $('#bulkActionExecute').prop('disabled', false);
+  });
+
+  // Execute bulk action
+  $('#bulkActionExecute').click(function() {
+    executeBulkAction(roomName);
+  });
+
+  // Edit room info
+  $('#edit-room-btn').click(function() {
+    editRoomInfo(roomName);
+  });
+
+  $('#editRoomSubmit').click(function() {
+    updateRoomInfo();
+  });
+
+  // Edit song
+  $('.edit-song-btn').click(function() {
+    var songId = $(this).data('song-id');
+    editSong(roomName, songId);
+  });
+
+  $('#editSongSubmit').click(function() {
+    updateSong(roomName);
   });
 }
 
@@ -431,6 +493,193 @@ function playPreview(previewUrl) {
   var audio = $('#preview-audio')[0];
   audio.src = previewUrl;
   audio.play();
+}
+
+function editRoomInfo(roomName) {
+  // Get current room data from the page
+  var description = $('.hero-unit p').text();
+  if (description === 'No description') {
+    description = '';
+  }
+  var active = $('.label-success').length > 0;
+  
+  $('#editRoomName').val(roomName);
+  $('#editRoomDescription').val(description);
+  $('#editRoomActive').prop('checked', active);
+  
+  $('#editRoomModal').modal('show');
+}
+
+function updateRoomInfo() {
+  var roomName = $('#editRoomName').val();
+  var formData = {
+    description: $('#editRoomDescription').val(),
+    active: $('#editRoomActive').is(':checked')
+  };
+  
+  $.ajax({
+    url: `/admin/api/rooms/${roomName}`,
+    method: 'PUT',
+    data: JSON.stringify(formData),
+    contentType: 'application/json',
+    success: function(data) {
+      $('#editRoomModal').modal('hide');
+      location.reload();
+    },
+    error: function(xhr) {
+      var error = xhr.responseJSON ? xhr.responseJSON.error : 'Error updating room';
+      alert('Error: ' + error);
+    }
+  });
+}
+
+function editSong(roomName, songId) {
+  // Get current song data from the table row
+  var row = $(`tr[data-song-id="${songId}"]`);
+  var artist = row.find('td:nth-child(3)').text(); // Artist column
+  var track = row.find('td:nth-child(4)').text();  // Track column
+  
+  // Get URLs from buttons if they exist
+  var trackViewUrl = '';
+  var previewUrl = '';
+  
+  var iTunesBtn = row.find('a[href*="itunes.apple.com"]');
+  if (iTunesBtn.length > 0) {
+    trackViewUrl = iTunesBtn.attr('href');
+  }
+  
+  var previewBtn = row.find('.preview-btn');
+  if (previewBtn.length > 0) {
+    previewUrl = previewBtn.data('preview');
+  }
+  
+  // Populate the modal
+  $('#editSongId').val(songId);
+  $('#editSongArtist').val(artist);
+  $('#editSongTrack').val(track);
+  $('#editSongViewUrl').val(trackViewUrl);
+  $('#editSongPreviewUrl').val(previewUrl);
+  
+  $('#editSongModal').modal('show');
+}
+
+function updateSong(roomName) {
+  var songId = $('#editSongId').val();
+  var formData = {
+    artistName: $('#editSongArtist').val(),
+    trackName: $('#editSongTrack').val(),
+    trackViewUrl: $('#editSongViewUrl').val(),
+    previewUrl: $('#editSongPreviewUrl').val()
+  };
+  
+  $.ajax({
+    url: `/admin/api/rooms/${roomName}/songs/${songId}`,
+    method: 'PUT',
+    data: JSON.stringify(formData),
+    contentType: 'application/json',
+    success: function(data) {
+      $('#editSongModal').modal('hide');
+      location.reload();
+    },
+    error: function(xhr) {
+      var error = xhr.responseJSON ? xhr.responseJSON.error : 'Error updating song';
+      alert('Error: ' + error);
+    }
+  });
+}
+
+function updateBulkActionsState() {
+  var selectedCount = $('.song-checkbox:checked').length;
+  var bulkButton = $('#bulk-actions-btn');
+  
+  if (selectedCount > 0) {
+    bulkButton.removeClass('btn-warning').addClass('btn-warning');
+    bulkButton.text(`Bulk Actions (${selectedCount})`);
+  } else {
+    bulkButton.removeClass('btn-warning').addClass('btn-warning');
+    bulkButton.text('Bulk Actions');
+  }
+}
+
+function executeBulkAction(roomName) {
+  var selectedAction = $('input[name="bulkAction"]:checked').val();
+  var selectedSongIds = [];
+  
+  $('.song-checkbox:checked').each(function() {
+    selectedSongIds.push($(this).val());
+  });
+  
+  if (selectedSongIds.length === 0) {
+    alert('No songs selected');
+    return;
+  }
+  
+  if (selectedAction === 'delete') {
+    if (confirm(`Are you sure you want to delete ${selectedSongIds.length} song(s)? This action cannot be undone.`)) {
+      bulkDeleteSongs(roomName, selectedSongIds);
+    }
+  } else if (selectedAction === 'export') {
+    exportSongsToCSV(roomName, selectedSongIds);
+  }
+}
+
+function bulkDeleteSongs(roomName, songIds) {
+  $('#bulkActionsModal').modal('hide');
+  
+  // Show progress
+  var progress = 0;
+  var total = songIds.length;
+  
+  alert(`Deleting ${total} songs...`);
+  
+  // Delete songs one by one (could be optimized with bulk API endpoint)
+  var deletePromises = songIds.map(function(songId) {
+    return $.ajax({
+      url: `/admin/api/rooms/${roomName}/songs/${songId}`,
+      method: 'DELETE'
+    });
+  });
+  
+  Promise.all(deletePromises)
+    .then(function() {
+      alert(`Successfully deleted ${total} songs`);
+      location.reload();
+    })
+    .catch(function(error) {
+      alert(`Error deleting songs: ${error.responseJSON ? error.responseJSON.error : 'Unknown error'}`);
+      location.reload();
+    });
+}
+
+function exportSongsToCSV(roomName, songIds) {
+  var csvContent = "data:text/csv;charset=utf-8,";
+  csvContent += "Artist,Track,iTunes URL,Preview URL\n";
+  
+  // Get data from table rows
+  songIds.forEach(function(songId) {
+    var row = $(`tr[data-song-id="${songId}"]`);
+    var artist = row.find('td:nth-child(3)').text().replace(/"/g, '""');
+    var track = row.find('td:nth-child(4)').text().replace(/"/g, '""');
+    
+    var iTunesBtn = row.find('a[href*="itunes.apple.com"]');
+    var iTunesUrl = iTunesBtn.length > 0 ? iTunesBtn.attr('href') : '';
+    
+    var previewBtn = row.find('.preview-btn');
+    var previewUrl = previewBtn.length > 0 ? previewBtn.data('preview') : '';
+    
+    csvContent += `"${artist}","${track}","${iTunesUrl}","${previewUrl}"\n`;
+  });
+  
+  var encodedUri = encodeURI(csvContent);
+  var link = document.createElement("a");
+  link.setAttribute("href", encodedUri);
+  link.setAttribute("download", `${roomName}-songs-export.csv`);
+  document.body.appendChild(link);
+  
+  link.click();
+  document.body.removeChild(link);
+  
+  $('#bulkActionsModal').modal('hide');
 }
 
 function escapeHtml(text) {

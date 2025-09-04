@@ -128,35 +128,11 @@ block sections
       button.close(type="button", data-dismiss="modal") ×
       h3 Add Song
     .modal-body
-      .tabbable
-        ul.nav.nav-tabs
-          li.active
-            a(href="#search-tab", data-toggle="tab") Search Apple Music
-          li
-            a(href="#manual-tab", data-toggle="tab") Manual Entry
-        .tab-content
-          #search-tab.tab-pane.active
-            .control-group
-              input#song-search(type="text", placeholder="Search for songs...", class="input-large")
-              button.btn.btn-primary#search-btn Search
-            #search-results
-          #manual-tab.tab-pane
-            form#manualSongForm
-              .control-group
-                label Track ID (iTunes)
-                input(type="number", name="trackId", required)
-              .control-group
-                label Artist Name
-                input(type="text", name="artistName", required)
-              .control-group
-                label Track Name
-                input(type="text", name="trackName", required)
-              .control-group
-                label iTunes URL
-                input(type="url", name="trackViewUrl")
-              .control-group
-                label Preview URL
-                input(type="url", name="previewUrl")
+      .control-group
+        .input-append
+          input#song-search(type="text", placeholder="Search for songs...", class="input-large")
+          button.btn.btn-primary#search-btn Search
+      #search-results
     .modal-footer
       button.btn(data-dismiss="modal") Cancel
 
@@ -189,5 +165,70 @@ block sections
     .modal-footer
       button.btn(data-dismiss="modal") Cancel
       button.btn.btn-primary#import-submit Import Songs
+
+  #editRoomModal.modal.hide.fade
+    .modal-header
+      button.close(type="button", data-dismiss="modal") ×
+      h3 Edit Room Info
+    .modal-body
+      form#editRoomForm
+        input#editRoomName(type="hidden", name="roomName")
+        .control-group
+          label.control-label(for="editRoomDescription") Description
+          .controls
+            textarea#editRoomDescription(name="description", rows="3")
+        .control-group
+          .controls
+            label.checkbox Active
+              input#editRoomActive(type="checkbox", name="active")
+    .modal-footer
+      button.btn(data-dismiss="modal") Cancel
+      button.btn.btn-primary#editRoomSubmit(type="submit") Save Changes
+
+  #editSongModal.modal.hide.fade
+    .modal-header
+      button.close(type="button", data-dismiss="modal") ×
+      h3 Edit Song
+    .modal-body
+      form#editSongForm
+        input#editSongId(type="hidden", name="songId")
+        .control-group
+          label.control-label(for="editSongArtist") Artist Name
+          .controls
+            input#editSongArtist(type="text", name="artistName", required)
+        .control-group
+          label.control-label(for="editSongTrack") Track Name
+          .controls
+            input#editSongTrack(type="text", name="trackName", required)
+        .control-group
+          label.control-label(for="editSongViewUrl") iTunes URL
+          .controls
+            input#editSongViewUrl(type="url", name="trackViewUrl")
+        .control-group
+          label.control-label(for="editSongPreviewUrl") Preview URL
+          .controls
+            input#editSongPreviewUrl(type="url", name="previewUrl")
+    .modal-footer
+      button.btn(data-dismiss="modal") Cancel
+      button.btn.btn-primary#editSongSubmit(type="submit") Save Changes
+
+  #bulkActionsModal.modal.hide.fade
+    .modal-header
+      button.close(type="button", data-dismiss="modal") ×
+      h3 Bulk Actions
+    .modal-body
+      p#selectedSongsCount No songs selected
+      .control-group
+        label Choose an action:
+        .controls
+          label.radio
+            input(type="radio", name="bulkAction", value="delete")
+            | Delete selected songs
+          label.radio
+            input(type="radio", name="bulkAction", value="export")
+            | Export selected songs to CSV
+    .modal-footer
+      button.btn(data-dismiss="modal") Cancel
+      button.btn.btn-warning#bulkActionExecute(disabled) Execute Action
 
   audio#preview-audio(controls, style="display: none;")

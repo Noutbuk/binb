@@ -212,6 +212,34 @@ router.post('/api/rooms/:roomName/songs', requireAdmin, async (req, res, next) =
   }
 });
 
+// Update song metadata
+router.put('/api/rooms/:roomName/songs/:songId', requireAdmin, async (req, res, next) => {
+  try {
+    const { roomName, songId } = req.params;
+    const { artistName, trackName, trackViewUrl, previewUrl } = req.body;
+
+    // Check if song exists in room first
+    const roomExists = await roomManager.roomExists(roomName);
+    if (!roomExists) {
+      return res.status(404).json({ error: 'Room not found' });
+    }
+
+    const result = await songManager.updateSongMetadata(songId, {
+      artistName,
+      trackName,
+      trackViewUrl,
+      previewUrl
+    });
+
+    res.json(result);
+  } catch (error) {
+    if (error.message === 'Song not found') {
+      return res.status(404).json({ error: error.message });
+    }
+    next(error);
+  }
+});
+
 // Remove song from room
 router.delete('/api/rooms/:roomName/songs/:songId', requireAdmin, async (req, res, next) => {
   try {
