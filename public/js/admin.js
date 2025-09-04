@@ -97,12 +97,24 @@ function initRoomsPage() {
   });
 }
 
+// Global variable to track if songs were added in the current modal session
+var songsAddedThisSession = false;
+
 function initRoomDetails() {
   var roomName = window.location.pathname.split('/').pop();
   
   // Add song
   $('#add-song-btn').click(function() {
+    songsAddedThisSession = false; // Reset when opening modal
     $('#addSongModal').modal('show');
+  });
+  
+  // Handle modal close events - refresh if songs were added
+  // Bootstrap 2 uses 'hidden' instead of 'hidden.bs.modal'
+  $('#addSongModal').on('hidden', function() {
+    if (songsAddedThisSession) {
+      location.reload();
+    }
   });
   
   // Search songs
@@ -412,6 +424,7 @@ function addSongToRoom(roomName, songData) {
     contentType: 'application/json',
     success: function(data) {
       button.removeClass('btn-primary').addClass('btn-success').text('Added!');
+      songsAddedThisSession = true; // Mark that a song was successfully added
       setTimeout(function() {
         button.prop('disabled', false).removeClass('btn-success').addClass('btn-primary').text(originalText);
       }, 2000);

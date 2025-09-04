@@ -10,3 +10,5 @@ public/js/primus.min.js
 .claude
 .env
 .playwright-mcp
+test-results
+playwright-report

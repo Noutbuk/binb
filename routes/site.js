@@ -1,7 +1,6 @@
 'use strict';
 
 const Captcha = require('../lib/captcha');
-const config = require('../config');
 const dataService = require('../lib/data-service');
 const http = require('http');
 const parallel = require('async/parallel');
@@ -35,23 +34,32 @@ const subTask = function (genre) {
  * Extract at random in each room, some album covers and return the result as a JSON.
  */
 
-exports.artworks = function (req, res, next) {
-  const tasks = {};
-  config.rooms.forEach(function (room) {
-    tasks[room] = function (callback) {
-      const subtasks = [];
-      for (let i = 0; i < 6; i++) {
-        subtasks.push(subTask(room));
+exports.artworks = async function (req, res, next) {
+  try {
+    const allRooms = await roomManager.getAllRooms();
+    const activeRooms = allRooms.filter(room => room.active);
+    const roomNames = activeRooms.map(room => room.name);
+    
+    const tasks = {};
+    roomNames.forEach(function (room) {
+      tasks[room] = function (callback) {
+        const subtasks = [];
+        for (let i = 0; i < 6; i++) {
+          subtasks.push(subTask(room));
+        }
+        parallel(subtasks, callback);
+      };
+    });
+    parallel(tasks, function (err, results) {
+      if (err) {
+        return next(err);
       }
-      parallel(subtasks, callback);
-    };
-  });
-  parallel(tasks, function (err, results) {
-    if (err) {
-      return next(err);
-    }
-    res.send(results);
-  });
+      res.send(results);
+    });
+  } catch (error) {
+    console.error('Error loading rooms for artworks:', error);
+    next(error);
+  }
 };
 
 exports.changePasswd = function (req, res) {
