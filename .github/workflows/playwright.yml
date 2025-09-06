@@ -6,6 +6,12 @@ on:
   pull_request:
     branches: [ main ]
 
+permissions:
+  contents: read
+  actions: read
+  checks: write
+  pull-requests: write
+
 jobs:
   test:
     timeout-minutes: 60
@@ -31,6 +37,16 @@ jobs:
     - name: Run Playwright tests
       run: npm run test:full
 
+    - name: Publish Test Results
+      uses: EnricoMi/publish-unit-test-result-action@v2
+      if: always()
+      with:
+        files: "test-results/*.xml"
+        check_name: "Playwright Test Results"
+        comment_title: "Playwright Test Results"
+        report_individual_runs: true
+        dedupe_classes_by_file_name: false
+
     - name: Upload Playwright Report
       uses: actions/upload-artifact@v4
       if: always()
@@ -43,6 +59,6 @@ jobs:
       uses: actions/upload-artifact@v4
       if: always()
       with:
-        name: test-results
+        name: playwright-test-results
         path: test-results/
         retention-days: 30
