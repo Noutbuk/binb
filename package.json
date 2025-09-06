@@ -32,6 +32,7 @@
     "test:e2e:headed": "npx playwright test --headed",
     "test:e2e:debug": "npx playwright test --debug",
     "test:unit": "jest",
+    "test:unit:coverage": "jest --coverage",
     "test:cleanup": "npm run local:redis-stop",
     "test:full": "npm run test:e2e"
   },

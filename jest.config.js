@@ -13,12 +13,24 @@ module.exports = {
   verbose: true,
   
   // Collect coverage information
-  collectCoverage: false, // Can be enabled with --coverage flag
+  collectCoverage: false, // Can be enabled with --coverage flag or CI environment
   collectCoverageFrom: [
     'lib/**/*.js',
     '!lib/**/*.test.js',
     '!**/node_modules/**'
   ],
+  
+  // Coverage reporters
+  coverageReporters: [
+    'text',        // Console output
+    'text-summary', // Brief summary
+    'html',        // HTML report in coverage/ directory
+    'lcov',        // For CI/CD integration
+    'cobertura'    // XML format for GitHub Actions
+  ],
+  
+  // Coverage directory
+  coverageDirectory: 'coverage',
   
   // Setup files - run before each test file
   setupFilesAfterEnv: ['<rootDir>/tests/setup/jest.setup.js'],

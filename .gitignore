@@ -12,3 +12,4 @@ public/js/primus.min.js
 .playwright-mcp
 test-results
 playwright-report
+coverage
