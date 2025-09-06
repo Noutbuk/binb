@@ -47,7 +47,7 @@ module.exports = defineConfig({
   /* Run Redis and dev server before starting the tests */
   webServer: [
     {
-      command: 'npm run local:redis',
+      command: 'npm run test:redis',
       port: 6379,
       reuseExistingServer: !process.env.CI,
       timeout: 60 * 1000,

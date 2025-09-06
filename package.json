@@ -15,7 +15,7 @@
     "admin:setup": "node scripts/setup-admin.js setup",
     "admin:list": "node scripts/setup-admin.js list",
     "admin:promote": "node scripts/setup-admin.js promote",
-    "local:redis": "docker compose -f docker-compose.local.yml up",
+    "local:redis": "docker compose -f docker-compose.local.yml up -d",
     "local:redis-stop": "docker compose -f docker-compose.local.yml down",
     "local:redis-logs": "docker compose -f docker-compose.local.yml logs -f",
     "local:start": "NODE_ENV=development node --env-file=.env.local app.js",
@@ -26,10 +26,12 @@
     "docker:logs": "docker compose logs -f",
     "docker:validate": "bash scripts/validate-docker.sh",
     "test:server": "NODE_ENV=test node --env-file=.env.local app.js",
+    "test:redis": "docker compose -f docker-compose.test.yml up",
     "test:e2e": "npx playwright test",
     "test:e2e:ui": "npx playwright test --ui",
     "test:e2e:headed": "npx playwright test --headed",
     "test:e2e:debug": "npx playwright test --debug",
+    "test:unit": "jest",
     "test:cleanup": "npm run local:redis-stop",
     "test:full": "npm run test:e2e"
   },
@@ -61,6 +63,8 @@
   },
   "devDependencies": {
     "@playwright/test": "^1.55.0",
+    "jest": "^30.1.3",
+    "jest-junit": "^16.0.0",
     "prettier": "^2.8.8"
   }
 }

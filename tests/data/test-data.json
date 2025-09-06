@@ -1,0 +1,112 @@
+{
+  "songs": [
+    {
+      "id": "791354168",
+      "trackViewUrl": "https://music.apple.com/us/album/royals/791354164?i=791354168&uo=4",
+      "trackName": "Royals",
+      "previewUrl": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview116/v4/ba/62/0e/ba620ef3-9a93-c4e4-20d3-6ca01a0000b3/mzaf_229273744212069656.plus.aac.p.m4a",
+      "artworkUrl60": "https://is1-ssl.mzstatic.com/image/thumb/Music/v4/c9/af/58/c9af5813-7975-3644-d873-14983f05f767/075679948748.jpg/60x60bb.jpg",
+      "artworkUrl100": "https://is1-ssl.mzstatic.com/image/thumb/Music/v4/c9/af/58/c9af5813-7975-3644-d873-14983f05f767/075679948748.jpg/100x100bb.jpg",
+      "artistName": "Lorde"
+    },
+    {
+      "id": "566322365",
+      "trackViewUrl": "https://music.apple.com/us/album/skyfall/566322358?i=566322365&uo=4",
+      "artworkUrl100": "https://is1-ssl.mzstatic.com/image/thumb/Music125/v4/b3/fe/cf/b3fecf76-0359-8e14-0651-4b101fc68a3f/886443673632.jpg/100x100bb.jpg",
+      "trackName": "Skyfall",
+      "previewUrl": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview115/v4/a8/f3/65/a8f365f6-9046-8e0a-78ba-5fa964b57ab6/mzaf_8633278038526787975.plus.aac.p.m4a",
+      "artworkUrl60": "https://is1-ssl.mzstatic.com/image/thumb/Music125/v4/b3/fe/cf/b3fecf76-0359-8e14-0651-4b101fc68a3f/886443673632.jpg/60x60bb.jpg",
+      "artistName": "Adele"
+    },
+    {
+      "id": "528437613",
+      "trackViewUrl": "https://music.apple.com/us/album/in-the-end/528436018?i=528437613&uo=4",
+      "artworkUrl100": "https://is1-ssl.mzstatic.com/image/thumb/Features115/v4/f0/31/b2/f031b2b2-bcf0-6102-426f-e0b2c7437415/dj.vrgpwamf.jpg/100x100bb.jpg",
+      "trackName": "In the End",
+      "previewUrl": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview112/v4/6c/60/cf/6c60cf91-e098-84bc-79af-8f3615b57b19/mzaf_12714078272888357351.plus.aac.p.m4a",
+      "artworkUrl60": "https://is1-ssl.mzstatic.com/image/thumb/Features115/v4/f0/31/b2/f031b2b2-bcf0-6102-426f-e0b2c7437415/dj.vrgpwamf.jpg/60x60bb.jpg",
+      "artistName": "LINKIN PARK"
+    }
+  ],
+  "rooms": {
+    "test-room": {
+      "name": "test-room",
+      "metadata": {
+        "description": "Test Room for Unit Tests",
+        "active": "true",
+        "createdAt": "2025-09-06T12:00:00.000Z",
+        "updatedAt": "2025-09-06T12:00:00.000Z",
+        "createdBy": "testuser",
+        "updatedBy": "testuser"
+      }
+    },
+    "empty-room": {
+      "name": "empty-room",
+      "metadata": {
+        "description": "Empty Room for Testing",
+        "active": "false",
+        "createdAt": "2025-09-06T10:00:00.000Z",
+        "updatedAt": "2025-09-06T10:00:00.000Z",
+        "createdBy": "testuser2",
+        "updatedBy": "testuser2"
+      }
+    }
+  },
+  "users": {
+    "testuser": {
+      "username": "testuser",
+      "password": "9b96147fb10db30103f3aa8a38e4db78ec28c7293594933f6cc886a2bc8c884f",
+      "salt": "kPd06cK1",
+      "email": "test@example.com",
+      "role": "2",
+      "wins": "5",
+      "games": "10",
+      "bestguesstime": "2.5"
+    },
+    "testuser2": {
+      "username": "testuser2",
+      "password": "test_password_hash",
+      "salt": "test_salt",
+      "email": "test2@example.com",
+      "role": "1",
+      "wins": "3",
+      "games": "7",
+      "bestguesstime": "3.2"
+    },
+    "adminuser": {
+      "username": "adminuser",
+      "password": "admin_password_hash",
+      "salt": "admin_salt",
+      "email": "admin@example.com",
+      "role": "3",
+      "wins": "15",
+      "games": "20",
+      "bestguesstime": "1.8"
+    }
+  },
+  "emails": {
+    "test@example.com": "testuser",
+    "test2@example.com": "testuser2",
+    "admin@example.com": "adminuser"
+  },
+  "tokens": {
+    "test_token_123": {
+      "value": "testuser",
+      "ttl": 3600
+    },
+    "admin_token_456": {
+      "value": "adminuser",
+      "ttl": 7200
+    }
+  },
+  "bans": {
+    "192.168.1.100": {
+      "bannedBy": "admin",
+      "ttl": 1800
+    },
+    "10.0.0.50": {
+      "bannedBy": "adminuser",
+      "ttl": 3600
+    }
+  }
+}
