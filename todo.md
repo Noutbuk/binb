@@ -61,3 +61,26 @@
 - `routes/admin.js` - Backend API endpoints for edit/bulk operations  
 - `lib/services/room-manager.js` - Song update operations
 - `public/css/style.css` - Styling fixes if needed
+
+
+
+# HUMAN
+* switch to new redis client without legacy mode
+* solve issue, that the itunes url is deleted after a song edit
+* solve some of the button issues on the admin uis page
+* think about how/where to promote (the first) user to an admin
+* change/improve login captche mechanism
+* add more/better playwright tests
+* there is no way to delete a room
+* look when/how this error occurs:
+[WebServer] Error loading rooms for artworks: TypeError: Cannot read properties of undefined (reading 'trackscount')
+[WebServer]     at /home/runner/work/binb/binb/routes/site.js:18:40
+[WebServer]     at /home/runner/work/binb/binb/node_modules/async/internal/parallel.js:25:39
+[WebServer]     at eachOfArrayLike (/home/runner/work/binb/binb/node_modules/async/eachOf.js:61:9)
+[WebServer]     at eachOf (/home/runner/work/binb/binb/node_modules/async/eachOf.js:181:12)
+[WebServer]     at awaitable (/home/runner/work/binb/binb/node_modules/async/internal/awaitify.js:14:28)
+[WebServer]     at /home/runner/work/binb/binb/node_modules/async/internal/parallel.js:24:5
+[WebServer]     at awaitable (/home/runner/work/binb/binb/node_modules/async/internal/awaitify.js:14:28)
+[WebServer]     at parallel (/home/runner/work/binb/binb/node_modules/async/parallel.js:178:35)
+[WebServer]     at tasks.<computed> (/home/runner/work/binb/binb/routes/site.js:50:9)
+[WebServer]     at /home/runner/work/binb/binb/node_modules/async/internal/parallel.js:25:39
