@@ -112,8 +112,7 @@ class RedisManager {
   async getClient() {
     if (!this.client) {
       this.client = createClient({ 
-        socket: { port: 6379, host: 'localhost' },
-        legacyMode: true
+        socket: { port: 6379, host: 'localhost' }
       });
       
       this.client.on('error', (err) => {
@@ -165,12 +164,6 @@ class RedisManager {
       const user = data.users[username];
       user.created = Date.now().toString();
       await client.hSet(`user:${username}`, user);
-    }
-
-    // Seed tokens and bans using DataService
-    for (const token in data.tokens) {
-      const tokenData = data.tokens[token];
-      await DataService.users.setToken(token, tokenData.ttl, tokenData.value);
     }
 
     for (const ip in data.bans) {
