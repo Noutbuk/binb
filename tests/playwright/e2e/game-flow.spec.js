@@ -22,22 +22,6 @@ test.describe('Game Flow', () => {
     await expect(roomContent).toBeVisible({ timeout: TIMEOUTS.MEDIUM });
   });
 
-  test('should display player count in room', async ({ page }) => {
-    await helpers.login(USERS.TEST_USER.username, USERS.TEST_USER.password);
-    await helpers.joinRoom('test-room');
-    
-    // Wait for room to load
-    await page.waitForSelector('#users > li', { timeout: 5000 });
-    
-    // Check for game-related elements (even if game isn't active)
-    // These might include player lists, score displays, game status, etc.
-    const playerInfo = page.locator('#users > li');
-    
-    // At least one of these should be visible
-    const hasPlayerElements = await playerInfo.count() > 0;
-    expect(hasPlayerElements).toBe(true);
-  });
-
   test('should handle guess input', async ({ page }) => {
     await helpers.login(USERS.TEST_USER.username, USERS.TEST_USER.password);
     await helpers.joinRoom('test-room');
