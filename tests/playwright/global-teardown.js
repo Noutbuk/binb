@@ -1,15 +1,17 @@
 /**
  * Global Playwright teardown for binb tests
- * Cleans up test environment (Redis and server are handled by Playwright)
+ * Uses shared Redis manager for cleanup
  */
 
+const redisManager = require('../shared/redis-manager');
+
 async function globalTeardown() {
-  console.log('🧹 Tearing down test environment...');
+  console.log('🧹 Tearing down Playwright test environment...');
   
   try {
     // Playwright will handle stopping Redis and the server automatically
-    // This is just for any additional cleanup if needed
-    console.log('✅ Test environment cleanup complete!');
+    // via webServer configuration, but we can do additional cleanup here
+    console.log('✅ Playwright test environment cleanup complete!');
     
   } catch (error) {
     console.error('⚠️ Error during teardown:', error.message);

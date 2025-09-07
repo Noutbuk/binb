@@ -1,8 +1,37 @@
 /**
- * Test constants for binb Playwright tests
+ * Test Constants
+ * Shared constants used across Jest and Playwright tests
  */
 
 module.exports = {
+  // Redis configuration
+  REDIS_HOST: 'localhost',
+  REDIS_PORT: 6379,
+  
+  // Test timeouts
+  DEFAULT_TIMEOUT: 60000,
+  REDIS_WAIT_TIMEOUT: 30000,
+  
+  // Test data
+  TEST_ROOM_NAME: 'test-room',
+  EMPTY_ROOM_NAME: 'empty-room',
+  
+  // Test users (for Jest)
+  TEST_USER: 'testuser',
+  TEST_USER_EMAIL: 'test@example.com',
+  TEST_USER_PASSWORD: 'testuser1234567',
+  
+  TEST_USER_2: 'testuser2',
+  TEST_USER_2_EMAIL: 'test2@example.com',
+  
+  ADMIN_USER: 'adminuser',
+  ADMIN_USER_EMAIL: 'admin@example.com',
+  
+  // Server configuration
+  TEST_SERVER_URL: 'http://localhost:8138',
+  TEST_SERVER_PORT: 8138,
+  
+  // Playwright-specific constants
   // Test URLs
   URLS: {
     HOME: '/',
@@ -13,7 +42,7 @@ module.exports = {
     TEST_ROOM: '/room/test-room',
   },
 
-  // Test user credentials
+  // Test user credentials (for Playwright)
   USERS: {
     TEST_USER: {
       username: 'testuser',

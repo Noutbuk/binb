@@ -3,30 +3,22 @@
  * Jest-based comprehensive test suite for all DataService methods
  */
 
-const DataService = require('../../lib/data-service');
-const redisManager = require('../helpers/redis-manager');
+const DataService = require('../../../lib/data-service');
+const redisManager = require('../../shared/redis-manager');
+const testDataLoader = require('../../shared/test-data-loader');
 const jestExtended = require('jest-extended');
 expect.extend(jestExtended);
-const path = require('path');
-const fs = require('fs');
 
-// Load test data
-function loadTestData() {
-  const testDataPath = path.resolve(__dirname, '../data/test-data.json');
-  return JSON.parse(fs.readFileSync(testDataPath, 'utf8'));
-}
-
-const testData = loadTestData();
+const testData = testDataLoader.loadTestData();
 
 describe('DataService', () => {
   // Setup and teardown
   beforeAll(async () => {
-    await redisManager.startRedis();
-    await redisManager.seedData(DataService);
+    await redisManager.setup(DataService);
   });
 
   afterAll(async () => {
-    await redisManager.stopRedis();
+    await redisManager.teardown();
   });
 
   beforeEach(async () => {

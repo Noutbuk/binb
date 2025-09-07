@@ -1,12 +1,15 @@
 const { test, expect } = require('@playwright/test');
-const { TestHelpers } = require('../utils/test-helpers');
-const { USERS, TIMEOUTS, GAME } = require('../utils/test-constants');
+const { TestHelpers } = require('../test-helpers');
+const { USERS, TIMEOUTS, GAME } = require('../../shared/test-constants');
+const redisManager = require('../../shared/redis-manager');
 
 test.describe('Game Flow', () => {
   let helpers;
 
   test.beforeEach(async ({ page }) => {
     helpers = new TestHelpers(page);
+    // Clean and reseed test data before each test
+    await redisManager.reset();
   });
 
   test('should be able to join a game room', async ({ page }) => {

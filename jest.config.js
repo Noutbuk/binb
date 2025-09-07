@@ -4,7 +4,7 @@ module.exports = {
   testEnvironment: 'node',
   
   // Test file patterns
-  testMatch: ['**/tests/unit/**/*.test.js'],
+  testMatch: ['**/tests/jest/unit/**/*.test.js'],
   
   // Test timeout (60 seconds for Redis operations)
   testTimeout: 60000,
@@ -33,7 +33,7 @@ module.exports = {
   coverageDirectory: 'coverage',
   
   // Setup files - run before each test file
-  setupFilesAfterEnv: ['<rootDir>/tests/setup/jest.setup.js'],
+  setupFilesAfterEnv: ['<rootDir>/tests/jest/jest.setup.js'],
   
   // Clear mocks between tests
   clearMocks: true,

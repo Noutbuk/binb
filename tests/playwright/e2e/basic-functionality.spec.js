@@ -1,12 +1,15 @@
 const { test, expect } = require('@playwright/test');
-const { TestHelpers } = require('../utils/test-helpers');
-const { URLS, USERS, SELECTORS, TIMEOUTS } = require('../utils/test-constants');
+const { TestHelpers } = require('../test-helpers');
+const { URLS, USERS, SELECTORS, TIMEOUTS } = require('../../shared/test-constants');
+const redisManager = require('../../shared/redis-manager');
 
 test.describe('Basic Functionality', () => {
   let helpers;
 
   test.beforeEach(async ({ page }) => {
     helpers = new TestHelpers(page);
+    // Clean and reseed test data before each test
+    await redisManager.reset();
   });
 
   test('should load home page successfully', async ({ page }) => {

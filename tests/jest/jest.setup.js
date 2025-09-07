@@ -3,12 +3,14 @@
  * This runs before each test file
  */
 
+const testConstants = require('../shared/test-constants');
+
 // Set test environment variables
 process.env.NODE_ENV = 'test';
-process.env.REDIS_URL = 'redis://localhost:6379';
+process.env.REDIS_URL = `redis://${testConstants.REDIS_HOST}:${testConstants.REDIS_PORT}`;
 
 // Extend Jest timeout for Redis operations
-jest.setTimeout(60000);
+jest.setTimeout(testConstants.DEFAULT_TIMEOUT);
 
 // Global test utilities
 global.testUtils = {
@@ -27,13 +29,3 @@ global.testUtils = {
     }
   }
 };
-
-// Mock console methods if needed (uncomment to reduce noise)
-// global.console = {
-//   ...console,
-//   log: jest.fn(),
-//   debug: jest.fn(),
-//   info: jest.fn(),
-//   warn: jest.fn(),
-//   error: console.error // Keep errors visible
-// };
