@@ -84,3 +84,6 @@
 [WebServer]     at parallel (/home/runner/work/binb/binb/node_modules/async/parallel.js:178:35)
 [WebServer]     at tasks.<computed> (/home/runner/work/binb/binb/routes/site.js:50:9)
 [WebServer]     at /home/runner/work/binb/binb/node_modules/async/internal/parallel.js:25:39
+* Unifiy different tests (redis usage, test data, ...)
+* do we need docker compose dev and local?
+* redis cleanup could be useful for playwright tests as well
