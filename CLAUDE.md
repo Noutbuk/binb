@@ -13,21 +13,77 @@ npm start                     # Start the application server (runs on port 8138)
 npm run local:start           # Start server in development mode with .env.local file
 ```
 
+### Testing Commands
+```bash
+# Unit Testing (Jest)
+npm run test:unit                # Run unit tests
+npm run test:unit:coverage       # Run unit tests with coverage report
+
+# End-to-End Testing (Playwright)
+npm run test:e2e                 # Run all Playwright tests headless
+npm run test:e2e:ui              # Run tests with Playwright UI (interactive)
+npm run test:e2e:headed          # Run tests with browser visible
+npm run test:e2e:debug           # Run tests in debug mode
+
+# Test Infrastructure
+npm run test:server              # Start server in test mode
+npm run test:redis               # Start Redis for testing
+npm run test:cleanup             # Stop test Redis and clean up
+npm run test:full                # Complete test cycle (E2E + unit with coverage)
+```
+
+### Code Formatting
+```bash
+# Prettier is configured via .prettierignore
+# Currently ignores: *.min.css
+```
+
 ### Prerequisites
 - Redis server must be running before starting the application
-- Node.js >=10.0.0 required
+- Node.js >=20.0.0 required (updated from >=10.0.0)
+- Docker (for Redis in testing)
 
 ### Data Import
 The `npm run import-data` command scrapes Apple Music playlists defined in `config.json` and populates Redis with track data. This must be run at least once before the game can function.
 
 ### Testing & Debugging
-The preferred method for testing and debugging the application is through **Playwright MCP integration**. This provides comprehensive browser automation capabilities for:
+
+#### Automated Testing
+The application has comprehensive test suites:
+
+- **Jest Unit Tests**: Located in `tests/jest/unit/` - Test core business logic, data services, and Redis operations
+- **Playwright E2E Tests**: Located in `tests/playwright/e2e/` - Test complete user workflows and browser interactions
+
+#### Test Structure
+```
+tests/
+├── jest/
+│   ├── jest.setup.js           # Jest configuration and setup
+│   └── unit/                   # Unit tests for lib/ modules
+├── playwright/
+│   ├── global-setup.js         # Test environment setup
+│   ├── global-teardown.js      # Test cleanup
+│   ├── test-helpers.js         # Reusable test utilities
+│   └── e2e/                    # End-to-end test specs
+├── shared/                     # Shared test utilities and data
+└── data/
+    └── test-data.json          # Test fixtures and sample data
+```
+
+#### Playwright MCP Integration
+The preferred method for interactive testing and debugging is through **Playwright MCP integration**:
 
 - **Visual testing**: Navigate to `http://localhost:8138/` to verify UI functionality
 - **Interactive debugging**: Click elements, fill forms, and test user workflows
 - **Error verification**: Check for JavaScript errors, network issues, and rendering problems
-- **Cross-browser testing**: Test functionality across different browser environments
+- **Cross-browser testing**: Test functionality across different browser environments (Chrome, Firefox)
 - **Screenshot capture**: Document issues or verify fixes visually
+
+#### Test Environment
+- **Test Redis**: Runs on Docker (docker-compose.test.yml)
+- **Test Server**: Runs on port 8138 with NODE_ENV=test
+- **Test Data**: Predefined test room with sample songs and test user account
+- **Coverage Reports**: Generated in `coverage/` directory for unit tests
 
 Use Playwright commands to systematically test the application rather than manual browser testing. This ensures consistent, repeatable testing and better issue identification.
 
@@ -128,12 +184,13 @@ redis-cli hgetall "user:username"            # View user data
 - **Before major changes**: Save working state before starting risky modifications
 
 #### Pre-Commit Checklist
-1. **Test core functionality**: Verify signup/login/rooms work using Playwright MCP
-2. **Restart server**: Run `npm run local:start` to ensure changes work properly
-3. **Check for errors**: Ensure no console errors or 500 responses in browser/server logs
-4. **Review staged files**: Always run `git status` and `git diff --cached` to verify what will be committed
-5. **Exclude temporary files**: Do not commit temporary files, logs, screenshots, or development artifacts (check `.gitignore`)
-6. **Verify all files**: Include all modified files relevant to the commit
+1. **Run tests**: Execute `npm run test:full` to verify both unit and E2E tests pass
+2. **Test core functionality**: Verify signup/login/rooms work using Playwright MCP
+3. **Restart server**: Run `npm run local:start` to ensure changes work properly
+4. **Check for errors**: Ensure no console errors or 500 responses in browser/server logs
+5. **Review staged files**: Always run `git status` and `git diff --cached` to verify what will be committed
+6. **Exclude temporary files**: Do not commit temporary files, logs, screenshots, test-results/, coverage/, or development artifacts (check `.gitignore`)
+7. **Verify all files**: Include all modified files relevant to the commit
 
 #### Commit Message Format
 Use concise, descriptive commit messages with this structure:
