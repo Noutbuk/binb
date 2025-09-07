@@ -27,7 +27,7 @@ test.describe('Game Flow', () => {
     await helpers.joinRoom('test-room');
     
     // Wait for room to load
-    await page.waitForTimeout(2000);
+    await page.waitForSelector('#users > li', { timeout: 5000 });
     
     // Check for game-related elements (even if game isn't active)
     // These might include player lists, score displays, game status, etc.
