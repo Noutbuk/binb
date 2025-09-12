@@ -1,9 +1,4 @@
 $(document).ready(function() {
-  // Dashboard functionality
-  if (window.location.pathname === '/admin') {
-    initDashboard();
-  }
-  
   // Rooms page functionality
   if (window.location.pathname === '/admin/rooms') {
     initRoomsPage();
@@ -14,18 +9,6 @@ $(document).ready(function() {
     initRoomDetails();
   }
 });
-
-function initDashboard() {
-  // Create room button
-  $('#create-room-btn').click(function() {
-    $('#createRoomModal').modal('show');
-  });
-  
-  // Create room form submission
-  $('#createRoomSubmit').click(function() {
-    createRoom();
-  });
-}
 
 function initRoomsPage() {
   // Search functionality
@@ -425,18 +408,12 @@ function addSongToRoom(roomName, songData) {
     success: function(data) {
       button.removeClass('btn-primary').addClass('btn-success').text('Added!');
       songsAddedThisSession = true; // Mark that a song was successfully added
-      setTimeout(function() {
-        button.prop('disabled', false).removeClass('btn-success').addClass('btn-primary').text(originalText);
-      }, 2000);
     },
     error: function(xhr) {
       button.prop('disabled', false).text(originalText);
       var error = xhr.responseJSON ? xhr.responseJSON.error : 'Error adding song';
       if (error.includes('already exists')) {
         button.removeClass('btn-primary').addClass('btn-warning').text('Already added');
-        setTimeout(function() {
-          button.removeClass('btn-warning').addClass('btn-primary').text(originalText);
-        }, 2000);
       } else {
         alert('Error: ' + error);
       }

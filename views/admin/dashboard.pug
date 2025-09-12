@@ -19,13 +19,11 @@ block sections
       .well
         h3 #{totalSongs}
         p Total Songs
-        a.btn.btn-info(href="/admin/rooms") View Details
     
     .span4
       .well
         h3 #{activeRooms}
         p Active Rooms
-        button.btn.btn-success#quick-import Quick Import
   
   .row
     .span12
@@ -58,35 +56,4 @@ block sections
       else
         .alert.alert-info
           strong No rooms found.
-          | Get started by creating your first room.
-  
-  .row
-    .span12
-      .well
-        h3 Quick Actions
-        .btn-group
-          button.btn.btn-large.btn-primary#create-room-btn Create New Room
-          button.btn.btn-large.btn-info#import-playlist-btn Import Playlist
-          button.btn.btn-large.btn-warning#search-songs-btn Search Songs
-
-  // Modals
-  #createRoomModal.modal.hide.fade
-    .modal-header
-      button.close(type="button", data-dismiss="modal") ×
-      h3 Create New Room
-    .modal-body
-      form#createRoomForm
-        .control-group
-          label.control-label(for="roomName") Room Name
-          .controls
-            input#roomName(type="text", name="name", required, pattern="[a-zA-Z0-9-_]+", title="Only letters, numbers, hyphens and underscores allowed")
-        .control-group
-          label.control-label(for="roomDescription") Description
-          .controls
-            textarea#roomDescription(name="description", rows="3")
-        .control-group
-          label.control-label Active
-            input(type="checkbox", name="active", checked)
-    .modal-footer
-      button.btn(data-dismiss="modal") Cancel
-      button.btn.btn-primary#createRoomSubmit(type="submit") Create Room
+          p Get started by creating your first room.
