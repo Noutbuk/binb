@@ -130,6 +130,35 @@ function initRoomDetails() {
   $('#import-submit').click(function() {
     importPlaylist(roomName);
   });
+
+  // Import artist
+  $('#import-artist-btn').click(function() {
+    resetArtistModal();
+    $('#importArtistModal').modal('show');
+  });
+  
+  // Artist search
+  $('#artist-search-btn').click(function() {
+    var query = $('#artist-search-input').val();
+    if (query.trim()) {
+      searchArtists(query);
+    }
+  });
+  
+  $('#artist-search-input').keypress(function(e) {
+    if (e.which === 13) {
+      $('#artist-search-btn').click();
+    }
+  });
+  
+  // Step navigation
+  $('#back-to-search-btn').click(function() {
+    showArtistSearchStep();
+  });
+  
+  $('#import-artist-submit').click(function() {
+    importArtist(roomName);
+  });
   
   // Song actions
   $('.preview-btn').click(function() {
@@ -460,6 +489,145 @@ function importPlaylist(roomName) {
       $('#import-progress').hide();
       $('#import-submit').prop('disabled', false);
       var error = xhr.responseJSON ? xhr.responseJSON.error : 'Error importing playlist';
+      alert('Error: ' + error);
+    }
+  });
+}
+
+function resetArtistModal() {
+  // Reset to step 1
+  showArtistSearchStep();
+  
+  // Clear inputs
+  $('#artist-search-input').val('');
+  $('#selected-artist-url').val('');
+  $('#songs-to-import').val('5');
+  $('#artist-sort-by').val('popular');
+  
+  // Hide results
+  $('#artist-search-results').hide();
+  $('#artist-results-list').empty();
+}
+
+function showArtistSearchStep() {
+  $('#artist-search-step').show();
+  $('#artist-import-step').hide();
+  $('#search-footer').show();
+  $('#import-footer').hide();
+  $('#import-artist-title').text('Import from Apple Music Artist - Search');
+}
+
+function showArtistImportStep() {
+  $('#artist-search-step').hide();
+  $('#artist-import-step').show();
+  $('#search-footer').hide();
+  $('#import-footer').show();
+  $('#import-artist-title').text('Import from Apple Music Artist - Settings');
+}
+
+function searchArtists(query) {
+  $('#artist-search-results').show();
+  $('#artist-results-list').html('<div class="text-center"><i class="icon-spinner icon-spin"></i> Searching for artists...</div>');
+  
+  $.ajax({
+    url: '/admin/api/search/artists',
+    data: { q: query, limit: 10 },
+    success: function(artists) {
+      displayArtistResults(artists);
+    },
+    error: function(xhr) {
+      $('#artist-results-list').html('<div class="alert alert-error">Error searching artists</div>');
+    }
+  });
+}
+
+function displayArtistResults(artists) {
+  if (artists.length === 0) {
+    $('#artist-results-list').html('<div class="alert alert-info">No artists found</div>');
+    return;
+  }
+  
+  var html = '<div class="artist-results-list">';
+  artists.forEach(function(artist) {
+    html += `
+      <div class="artist-result-item well well-small">
+        <div class="row-fluid">
+          <div class="span8">
+            <strong>${escapeHtml(artist.artistName)}</strong><br>
+            <small class="text-muted">Genre: ${escapeHtml(artist.primaryGenreName || 'Unknown')}</small>
+            ${artist.artistLinkUrl ? `<br><a href="${artist.artistLinkUrl}" target="_blank" class="text-info">View on Apple Music</a>` : ''}
+          </div>
+          <div class="span4 text-right">
+            <button class="btn btn-mini btn-primary select-artist-btn" 
+                    data-artist-url="${artist.artistLinkUrl || ''}"
+                    data-artist-name="${escapeHtml(artist.artistName)}"
+                    data-artist-id="${artist.artistId}">
+              Select
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
+  });
+  html += '</div>';
+  
+  $('#artist-results-list').html(html);
+  
+  // Add click handlers for select buttons
+  $('.select-artist-btn').click(function() {
+    var artistUrl = $(this).data('artist-url');
+    var artistName = $(this).data('artist-name');
+    var artistId = $(this).data('artist-id');
+    
+    selectArtist(artistUrl || artistId, artistName);
+  });
+}
+
+function selectArtist(artistUrlOrId, artistName) {
+  $('#selected-artist-url').val(artistUrlOrId);
+  $('#selected-artist-url').attr('placeholder', `Selected: ${artistName}`);
+  showArtistImportStep();
+}
+
+function importArtist(roomName) {
+  var artistUrlOrId = $('#selected-artist-url').val();
+  var songsToImport = parseInt($('#songs-to-import').val());
+  var sortBy = $('#artist-sort-by').val();
+  
+  if (!artistUrlOrId) {
+    alert('Please select an artist first');
+    return;
+  }
+  
+  if (!songsToImport || songsToImport < 1 || songsToImport > 50) {
+    alert('Please enter a valid number of songs (1-50)');
+    return;
+  }
+  
+  // Disable submit button
+  $('#import-artist-submit').prop('disabled', true).text('Importing...');
+  
+  var importData = {
+    artistUrlOrId: artistUrlOrId,
+    songsToImport: songsToImport,
+    sortBy: sortBy
+  };
+  
+  $.ajax({
+    url: `/admin/api/rooms/${roomName}/import-artist`,
+    method: 'POST',
+    data: JSON.stringify(importData),
+    contentType: 'application/json',
+    success: function(data) {
+      $('#import-artist-submit').prop('disabled', false).text('Import Songs');
+      $('#importArtistModal').modal('hide');
+      
+      alert(`Artist import completed!\nImported: ${data.imported} songs\nAdded: ${data.added}\nSkipped: ${data.skipped}\nErrors: ${data.errors}`);
+      location.reload();
+    },
+    error: function(xhr) {
+      $('#import-artist-submit').prop('disabled', false).text('Import Songs');
+      var error = xhr.responseJSON ? xhr.responseJSON.error : 'Error importing artist songs';
       alert('Error: ' + error);
     }
   });

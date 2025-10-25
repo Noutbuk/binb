@@ -290,6 +290,44 @@ router.post('/api/rooms/:roomName/import', requireAdmin, async (req, res, next) 
   }
 });
 
+// Import from Apple Music artist
+router.post('/api/rooms/:roomName/import-artist', requireAdmin, async (req, res, next) => {
+  try {
+    const { roomName } = req.params;
+    const { artistUrlOrId, songsToImport = 5, sortBy = 'popular' } = req.body;
+
+    if (!artistUrlOrId) {
+      return res.status(400).json({ error: 'Artist URL or ID is required' });
+    }
+
+    // Validate if it's a URL
+    if (typeof artistUrlOrId === 'string' && artistUrlOrId.includes('music.apple.com')) {
+      if (!appleMusicImporter.isValidAppleMusicUrl(artistUrlOrId)) {
+        return res.status(400).json({ error: 'Invalid Apple Music URL' });
+      }
+    }
+
+    // Import songs from artist
+    const importResult = await appleMusicImporter.importFromArtist(artistUrlOrId, {
+      songsToImport: parseInt(songsToImport),
+      sortBy
+    });
+
+    // Add songs to room
+    const addResult = await songManager.bulkAddSongsToRoom(roomName, importResult.songs);
+
+    res.json({
+      imported: importResult.songs.length,
+      added: addResult.added.length,
+      skipped: addResult.skipped.length,
+      errors: addResult.errors.length,
+      details: addResult
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
 // Search Apple Music
 router.get('/api/search/songs', requireAdmin, async (req, res, next) => {
   try {
@@ -301,6 +339,22 @@ router.get('/api/search/songs', requireAdmin, async (req, res, next) => {
 
     const songs = await appleMusicImporter.searchSongs(query, parseInt(limit));
     res.json(songs);
+  } catch (error) {
+    next(error);
+  }
+});
+
+// Search Apple Music artists
+router.get('/api/search/artists', requireAdmin, async (req, res, next) => {
+  try {
+    const { q: query, limit = 10 } = req.query;
+
+    if (!query) {
+      return res.status(400).json({ error: 'Search query is required' });
+    }
+
+    const artists = await appleMusicImporter.searchArtists(query, parseInt(limit));
+    res.json(artists);
   } catch (error) {
     next(error);
   }

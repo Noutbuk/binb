@@ -10,6 +10,7 @@ block sections
     .btn-group
       button.btn.btn-primary#add-song-btn Add Song
       button.btn.btn-info#import-playlist-btn Import Playlist
+      button.btn.btn-success#import-artist-btn Import Artist
       button.btn.btn-warning#bulk-actions-btn Bulk Actions
 
   .row
@@ -165,6 +166,51 @@ block sections
     .modal-footer
       button.btn(data-dismiss="modal") Cancel
       button.btn.btn-primary#import-submit Import Songs
+
+  #importArtistModal.modal.hide.fade
+    .modal-header
+      button.close(type="button", data-dismiss="modal") ×
+      h3#import-artist-title Import from Apple Music Artist
+    .modal-body
+      // Step 1: Artist Search
+      #artist-search-step
+        .control-group
+          label Search for Artist
+          .input-append
+            input#artist-search-input(type="text", placeholder="Enter artist name (e.g., Nina Chuba)", class="input-large")
+            button.btn.btn-primary#artist-search-btn Search
+          .help-block Search for artists by name to find their music
+        #artist-search-results(style="display: none;")
+          .control-group
+            label Artist Results
+            #artist-results-list
+              // Results will be populated here
+      
+      // Step 2: Import Settings (hidden initially)
+      #artist-import-step(style="display: none;")
+        form#importArtistForm
+          .control-group
+            label Selected Artist
+            input#selected-artist-url(type="text", readonly, class="input-large")
+            .help-block This artist will be used for importing songs
+          .control-group
+            label Number of songs to import
+            input#songs-to-import(type="number", min="1", max="50", value="5", required)
+            .help-block Maximum 50 songs
+          .control-group
+            label Sort by
+            select#artist-sort-by
+              option(value="popular") Most Popular
+              option(value="recent") Most Recent
+    .modal-footer
+      // Step 1 footer
+      #search-footer
+        button.btn(data-dismiss="modal") Cancel
+      
+      // Step 2 footer (hidden initially)
+      #import-footer(style="display: none;")
+        button.btn#back-to-search-btn Back to Search
+        button.btn.btn-success#import-artist-submit Import Songs
 
   #editRoomModal.modal.hide.fade
     .modal-header
