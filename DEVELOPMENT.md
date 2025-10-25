@@ -4,7 +4,7 @@ This guide shows how to run binb in a simplified local development environment w
 
 ## Prerequisites
 
-- Node.js >= 10.0.0 (Note: Node.js v18-20 recommended for best compatibility)
+- Node.js >= 20.0.0
 - Docker and Docker Compose
 - npm
 - System dependencies for canvas module (see Troubleshooting section)
@@ -21,10 +21,9 @@ This guide shows how to run binb in a simplified local development environment w
    npm run local:redis
    ```
 
-3. **Copy and configure environment variables**:
+3. **Configure environment variables**:
    ```bash
-   cp .env.local .env
-   # Edit .env if needed - defaults should work for local development
+   # Edit .env.local if needed - defaults should work for local development
    ```
 
 4. **Start the application locally**:
@@ -34,18 +33,17 @@ This guide shows how to run binb in a simplified local development environment w
 
 5. **Access the application**:
    - Main app: http://localhost:8138
-   - Admin panel: http://localhost:8138/admin (after creating an admin user)
+   - Admin panel: http://localhost:8138/admin (after loggin in as an admin user)
 
 ## Available Commands
 
 ### Redis Management
-- `npm run local:redis` - Start Redis container
-- `npm run local:redis-stop` - Stop Redis container  
-- `npm run local:redis-logs` - View Redis logs
+- `npm run local:redis:up` - Start Redis container
+- `npm run local:redis:down` - Stop Redis container  
+- `npm run local:redis:logs` - View Redis logs
 
 ### Application
 - `npm run local:start` - Start app locally (with .env.local config)
-- `npm run dev` - Start app in development mode
 - `npm run start` - Start app normally
 
 ### Data Management
@@ -71,18 +69,15 @@ The `.env.local` file contains:
 - `REDIS_URL=redis://localhost:6379` - Redis connection (Docker container)
 - `PORT=8138` - Application port
 - `NODE_ENV=development` - Environment mode
-- `SESSION_SECRET=local-dev-secret-change-in-production` - Session secret
+- `SITE_SECRET=local-dev-secret-change-in-production` - Session secret
 
 ## Troubleshooting
 
 ### Redis Connection Issues
-- Ensure Redis container is running: `npm run local:redis`
-- Check Redis logs: `npm run local:redis-logs`
+- Ensure Redis container is running: `npm run local:redis:up`
+- Check Redis logs: `npm run local:redis:logs`
 - Verify Redis is accessible: `redis-cli ping` (if redis-cli is installed locally)
 
-### Port Conflicts
-- If port 8138 is in use, change `PORT` in `.env`
-- If port 6379 is in use, modify `docker-compose.local.yml`
 
 ### Missing Dependencies
 - Run `npm install` to ensure all dependencies are installed
@@ -92,4 +87,3 @@ The `.env.local` file contains:
 
 If you prefer to run everything in Docker, use:
 - `npm run docker:dev` - Full Docker development environment
-- `npm run docker:stop` - Stop Docker containers

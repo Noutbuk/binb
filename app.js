@@ -16,7 +16,6 @@ const json = require('body-parser').json;
 const user = require('./routes/user');
 const admin = require('./routes/admin');
 const { usersClient } = require('./lib/redis-clients');
-const { addAdminStatus } = require('./lib/middleware/admin-auth');
 
 /**
  * Setting up Express.

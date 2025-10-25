@@ -121,7 +121,7 @@ Use Playwright commands to systematically test the application rather than manua
 - **lib/user.js**: User authentication, registration, password management
 - **lib/stats.js**: Player statistics tracking and leaderboards
 - **routes/**: Express route handlers for web pages and user actions
-- **util/load_with_complex_config.js**: Apple Music playlist scraper and data importer
+- **scripts/load_with_complex_config.js**: Apple Music playlist scraper and data importer
 
 #### Front-end
 

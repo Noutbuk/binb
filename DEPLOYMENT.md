@@ -1,6 +1,6 @@
 # Complete Deployment Guide for binb
 
-This guide covers all deployment options for binb with the new admin system.
+This guide covers all deployment options for binb.
 
 ## Quick Start (Docker - Recommended)
 

@@ -69,6 +69,8 @@
 * solve issue, that the itunes url is deleted after a song edit
 * solve some of the button issues on the admin uis page
 * think about how/where to promote (the first) user to an admin
+  * Should work with the script in /scripts! This is called verytime the container starts.
+* Test user registration. Does it work without sendgrid?
 * change/improve login captche mechanism
 * add more/better playwright tests
 * there is no way to delete a room
@@ -87,3 +89,6 @@
 * Unifiy different tests (redis usage, test data, ...)
 * do we need docker compose dev and local?
 * redis cleanup could be useful for playwright tests as well
+* cleanup .md files
+* create a docker build workflow
+  * Add that container to the docker-compose.yml as well as the main README

@@ -71,7 +71,7 @@ main() {
     # Wait for Redis to be available
     wait_for_redis
     
-    # Setup admin system only (no automatic data import)
+    # Setup admin system
     setup_admin_system
     
     echo "🚀 Starting binb server..."

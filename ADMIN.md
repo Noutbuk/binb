@@ -15,12 +15,10 @@ This document describes the new dynamic room and song management system for binb
 - Import entire playlists from Apple Music
 - Remove songs from rooms
 - Bulk operations for managing multiple songs
-- Real-time preview of songs
 
 ### Apple Music Integration
 - Search Apple Music catalog for songs
 - Import songs from Apple Music playlists
-- Support for artist-based imports with customizable song counts
 - Automatic metadata extraction (artwork, preview URLs, etc.)
 
 ## Setup
@@ -29,7 +27,7 @@ This document describes the new dynamic room and song management system for binb
 
 2. **Set up admin user**:
    ```bash
-   # Set up the admin system and create metadata for existing rooms
+   # Set up the admin system
    node scripts/setup-admin.js setup
    
    # List all users and their roles
@@ -46,7 +44,7 @@ This document describes the new dynamic room and song management system for binb
 
 4. **Access admin panel**:
    - Log in as an admin user
-   - Navigate to `/admin` or click "Admin Panel" in the top navigation
+   - Navigate to `/admin`
 
 ## Usage
 
@@ -64,7 +62,7 @@ This document describes the new dynamic room and song management system for binb
 1. Navigate to a room's detail page
 2. **Add individual songs**:
    - Click "Add Song"
-   - Search Apple Music or enter song details manually
+   - Search Apple Music
    - Click "Add" for desired songs
 
 3. **Import from playlist**:
@@ -82,7 +80,6 @@ This document describes the new dynamic room and song management system for binb
 
 - **Active Status**: Only active rooms appear in the game
 - **Descriptions**: Help identify room content and theme
-- **Song Limits**: No hard limits, but consider game performance
 
 ## File Structure
 
@@ -121,15 +118,6 @@ scripts/
 - Input validation for all forms
 - Rate limiting on Apple Music API calls
 
-## Migration from Static Config
-
-The system maintains backward compatibility with the existing `config.json` file:
-
-1. Existing rooms continue to work
-2. Room metadata is automatically created for existing rooms
-3. Static config is gradually replaced by database-driven configuration
-4. Fallback to static config if database fails
-
 ## API Endpoints
 
 ### Rooms
@@ -150,45 +138,3 @@ The system maintains backward compatibility with the existing `config.json` file
 - `GET /admin/api/search/songs?q=query` - Search Apple Music
 - `GET /admin/api/search/database?q=query` - Search local songs
 - `GET /admin/api/songs/:id/details` - Get song details
-
-## Troubleshooting
-
-### Common Issues
-
-1. **Admin panel not accessible**:
-   - Ensure user has admin role (use setup script)
-   - Check browser console for JavaScript errors
-   - Verify all admin files are uploaded correctly
-
-2. **Apple Music import fails**:
-   - Check playlist URL format
-   - Verify internet connection
-   - Check server logs for rate limiting issues
-
-3. **Songs not appearing in game**:
-   - Ensure room is marked as active
-   - Restart server to reload room configuration
-   - Check song data integrity in Redis
-
-### Logs
-
-Admin actions are logged to the console. Check server logs for:
-- Room creation/deletion events
-- Import progress and errors
-- Authentication failures
-
-## Performance Considerations
-
-- Large playlist imports may take several minutes
-- Consider song limits per room for optimal game performance
-- Monitor Redis memory usage with large song databases
-- Apple Music API has rate limits (handled automatically)
-
-## Future Enhancements
-
-- Scheduled imports
-- Song popularity tracking
-- Advanced search filters
-- Bulk room operations
-- User role management interface
-- Activity logs and analytics

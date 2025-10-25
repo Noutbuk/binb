@@ -53,36 +53,6 @@ async function setupAdmin() {
       console.log('✓ Admin user already exists');
     }
 
-    // 2. Set up room metadata for existing rooms
-    console.log('Setting up room metadata...');
-    
-    const existingRooms = await songsClient.keys('*') || [];
-    const roomKeys = existingRooms.filter(key => 
-      !key.startsWith('song:') && 
-      !key.startsWith('room:metadata:') && 
-      !key.startsWith('user:') && 
-      !key.startsWith('email:') &&
-      !key.startsWith('ban:') &&
-      !key.startsWith('token:')
-    );
-
-    for (const roomKey of roomKeys) {
-      const metadataKey = `room:metadata:${roomKey}`;
-      const exists = await songsClient.exists(metadataKey);
-      
-      if (!exists) {
-        const now = new Date().toISOString();
-        await songsClient.hSet(metadataKey, {
-          description: `Migrated room: ${roomKey}`,
-          active: config.rooms.includes(roomKey) ? 'true' : 'false',
-          createdAt: now,
-          updatedAt: now,
-          createdBy: 'system'
-        });
-        console.log(`✓ Created metadata for room: ${roomKey}`);
-      }
-    }
-
     console.log('✓ Admin system setup complete!');
     console.log('\nNext steps:');
     console.log('1. Start the server: npm start');

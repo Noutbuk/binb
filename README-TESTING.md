@@ -27,23 +27,6 @@ npm run test:full
 | `npm run test:cleanup` | Stop Redis and clean up |
 | `npm run test:full` | Complete test cycle (setup → test → cleanup) |
 
-## Test Structure
-
-```
-tests/
-├── setup/
-│   ├── global-setup.js      # Playwright global setup
-│   └── global-teardown.js   # Playwright global teardown
-├── utils/
-│   ├── test-helpers.js      # Common test utilities
-│   └── test-constants.js    # Test constants and selectors
-├── e2e/
-│   ├── basic-functionality.spec.js  # Basic app functionality tests
-│   └── game-flow.spec.js           # Game mechanics tests
-└── scripts/
-    └── ci-setup.sh          # CI/CD setup script
-```
-
 ## Test Environment
 
 The test suite automatically:
@@ -76,20 +59,6 @@ The test suite automatically:
 ### Environment Variables
 - `NODE_ENV=test` - Set during testing
 - `CI=true` - Detected automatically in CI environments
-
-## Test Categories
-
-### Basic Functionality Tests
-- Home page loading
-- User authentication (login/logout)
-- Room navigation
-- WebSocket connections
-
-### Game Flow Tests
-- Joining game rooms
-- Game state management
-- User interactions
-- Error handling
 
 ## Debugging Tests
 
