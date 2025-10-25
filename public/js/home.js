@@ -6,7 +6,9 @@
       var $this = $(this);
 
       data[$this.attr('href')].forEach(function (url) {
-        $('<img src="' + url + '" />').appendTo($this);
+        if (url) {
+          $('<img src="' + url + '" />').appendTo($this);
+        }
       }, $this);
     });
   });

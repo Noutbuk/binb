@@ -19,6 +19,7 @@
   var $touchplay;
   var $track = $('#summary .track');
   var $tracks = $('#tracks');
+  var $totalTracks = $('#total-tracks');
   var $users = $('#users');
   var audio;
   var elapsedtime = 0;
@@ -743,6 +744,7 @@
     }
 
     $track.text(data.counter + '/' + data.tot);
+    $totalTracks.find('span').text(data.totalTracks);
     addFeedback('What is this song?');
   };
 
