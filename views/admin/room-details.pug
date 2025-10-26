@@ -71,7 +71,7 @@ block sections
                     if song.previewUrl
                       button.btn.btn-mini.btn-info.preview-btn(data-preview=song.previewUrl) Preview
                     if song.trackViewUrl
-                      a.btn.btn-mini.btn-success(href=song.trackViewUrl, target="_blank") iTunes
+                      a.btn.btn-mini.btn-success.apple-music-link(href=song.trackViewUrl, target="_blank") Apple
                     button.btn.btn-mini.btn-warning.edit-song-btn(data-song-id=song.id) Edit
                     button.btn.btn-mini.btn-danger.delete-song-btn(data-song-id=song.id) Delete
 

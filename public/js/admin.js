@@ -532,8 +532,8 @@ function editSong(roomName, songId) {
   // Get URLs from buttons if they exist
   var trackViewUrl = '';
   var previewUrl = '';
-  
-  var iTunesBtn = row.find('a[href*="itunes.apple.com"]');
+
+  var iTunesBtn = row.find('a.apple-music-link');
   if (iTunesBtn.length > 0) {
     trackViewUrl = iTunesBtn.attr('href');
   }
@@ -651,7 +651,7 @@ function exportSongsToCSV(roomName, songIds) {
     var artist = row.find('td:nth-child(3)').text().replace(/"/g, '""');
     var track = row.find('td:nth-child(4)').text().replace(/"/g, '""');
     
-    var iTunesBtn = row.find('a[href*="itunes.apple.com"]');
+    var iTunesBtn = row.find('a.apple-music-link');
     var iTunesUrl = iTunesBtn.length > 0 ? iTunesBtn.attr('href') : '';
     
     var previewBtn = row.find('.preview-btn');
