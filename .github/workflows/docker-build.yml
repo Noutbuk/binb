@@ -32,6 +32,9 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            # branch event
+            type=ref,event=branch,suffix=-${{ github.run_number }}
 
       - name: Build and push Docker image
         id: push

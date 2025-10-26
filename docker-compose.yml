@@ -1,14 +1,12 @@
-version: '3.8'
-
 services:
   app:
-    image: # TODO
+    image: binb:1
     container_name: binb-app
     ports:
       - "8138:8138"
     environment:
       - NODE_ENV=production
-      - REDIS_URL=redis://redis:6379
+      - REDIS_URL=redis://binb-redis:6379
       - SITE_SECRET=${SITE_SECRET:-shhhh-very-secret}
     depends_on:
       redis:
@@ -17,7 +15,7 @@ services:
       - binb-network
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "/app/healthcheck.sh"]
+      test: ["CMD", "/app/scripts/healthcheck.sh"]
       interval: 30s
       timeout: 10s
       retries: 3

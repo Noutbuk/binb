@@ -4,7 +4,7 @@ const crypto = require('crypto');
 const dataService = require('../lib/data-service');
 const http = require('http');
 const mailer = require('../lib/email/mailer');
-const rooms = require('../config').rooms;
+const rooms = [];
 const User = require('../lib/user');
 const utils = require('../lib/utils');
 

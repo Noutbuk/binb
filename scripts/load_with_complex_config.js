@@ -6,8 +6,7 @@ const { JSDOM } = jsdom;
 const limiter = require('limiter');
 const { RateLimiter } = limiter;
 
-const config = require('../config');
-const rooms = config.rooms;
+const rooms = [];
 const { songsClientOptions } = require('../redis-config');
 songsClientOptions.legacyMode = false;
 const songsClient = require('redis').createClient(songsClientOptions);

@@ -7,7 +7,6 @@ This guide shows how to run binb in a simplified local development environment w
 - Node.js >= 20.0.0
 - Docker and Docker Compose
 - npm
-- System dependencies for canvas module (see Troubleshooting section)
 
 ## Quick Start
 
@@ -81,7 +80,6 @@ The `.env.local` file contains:
 
 ### Missing Dependencies
 - Run `npm install` to ensure all dependencies are installed
-- For canvas/image processing issues, install system dependencies as needed
 
 ## Docker Alternative
 

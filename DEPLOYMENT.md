@@ -66,7 +66,6 @@ npm start
 **Requirements**:
 - Node.js 20+
 - Redis 6+
-- Build tools (for canvas)
 
 ## Configuration
 
