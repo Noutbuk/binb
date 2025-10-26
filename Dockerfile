@@ -13,7 +13,7 @@ ENV NODE_ENV=production
 # Install redis-tools for Redis connectivity checks (needed for both dev and prod)
 RUN apt-get update && apt-get install -y --no-install-recommends \
     redis-tools \
-    fontconfig \
+   fontconfig \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 

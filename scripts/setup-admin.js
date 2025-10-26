@@ -10,6 +10,8 @@ const { songsClientOptions, usersClientOptions } = require('../redis-config');
 
 // Create separate clients for this script to avoid connection conflicts
 const createClients = async () => {
+  usersClientOptions.legacyMode = false;
+  songsClientOptions.legacyMode = false;
   const usersClient = redis.createClient(usersClientOptions);
   const songsClient = redis.createClient(songsClientOptions);
   
