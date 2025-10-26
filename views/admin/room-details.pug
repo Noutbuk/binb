@@ -6,7 +6,9 @@ block title
 block sections
   .hero-unit
     h1 Room: #{roomName}
-    p #{roomMetadata.description || 'No description'}
+    p#room-description
+      span.description-text #{roomMetadata.description || 'No description'}
+      button.btn.btn-mini.btn-link#edit-description-btn(title="Edit description") ✎
     .btn-group
       button.btn.btn-primary#add-song-btn Add Song
       button.btn.btn-info#import-playlist-btn Import Playlist
@@ -19,10 +21,13 @@ block sections
         dl
           dt Status
           dd
-            if roomMetadata.active
-              span.label.label-success Active
-            else
-              span.label.label-warning Inactive
+            label.checkbox#status-toggle
+              input(type="checkbox", id="room-status-checkbox", checked=roomMetadata.active)
+              span#status-label
+                if roomMetadata.active
+                  | Active
+                else
+                  | Inactive
           dt Songs
           dd #{pagination.total}
           dt Created
@@ -33,8 +38,6 @@ block sections
           dd #{new Date(roomMetadata.updatedAt).toLocaleDateString()}
           dt Updated By
           dd #{roomMetadata.updatedBy}
-        
-        button.btn.btn-block.btn-info#edit-room-btn Edit Room Info
 
     .span9
       .well
@@ -169,18 +172,11 @@ block sections
   #editRoomModal.modal.hide.fade
     .modal-header
       button.close(type="button", data-dismiss="modal") ×
-      h3 Edit Room Info
+      h3 Edit Room Description
     .modal-body
       form#editRoomForm
         input#editRoomName(type="hidden", name="roomName")
-        .control-group
-          label.control-label(for="editRoomDescription") Description
-          .controls
-            textarea#editRoomDescription(name="description", rows="3")
-        .control-group
-          .controls
-            label.checkbox Active
-              input#editRoomActive(type="checkbox", name="active")
+        textarea#editRoomDescription(name="description", rows="3")
     .modal-footer
       button.btn(data-dismiss="modal") Cancel
       button.btn.btn-primary#editRoomSubmit(type="submit") Save Changes

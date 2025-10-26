@@ -1,6 +1,6 @@
 /* Admin Panel Styles */
 
-.admin-dashboard .well {
+/* .admin-dashboard .well {
   text-align: center;
 }
 
@@ -205,4 +205,11 @@
     display: block;
     margin-bottom: 0.5em;
   }
+} */
+
+#editRoomModal textarea {
+  width: 100%;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 8px 12px;
 }

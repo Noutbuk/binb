@@ -192,9 +192,14 @@ function initRoomDetails() {
     executeBulkAction(roomName);
   });
 
-  // Edit room info
-  $('#edit-room-btn').click(function() {
-    editRoomInfo(roomName);
+  // Edit description
+  $('#edit-description-btn').click(function() {
+    editRoomDescription(roomName);
+  });
+
+  // Status toggle
+  $('#room-status-checkbox').change(function() {
+    toggleRoomStatusInline(roomName, $(this).is(':checked'));
   });
 
   $('#editRoomSubmit').click(function() {
@@ -503,10 +508,9 @@ function editRoomInfo(roomName) {
 function updateRoomInfo() {
   var roomName = $('#editRoomName').val();
   var formData = {
-    description: $('#editRoomDescription').val(),
-    active: $('#editRoomActive').is(':checked')
+    description: $('#editRoomDescription').val()
   };
-  
+
   $.ajax({
     url: `/admin/api/rooms/${roomName}`,
     method: 'PUT',
@@ -514,11 +518,52 @@ function updateRoomInfo() {
     contentType: 'application/json',
     success: function(data) {
       $('#editRoomModal').modal('hide');
-      location.reload();
+      $('.description-text').text(formData.description || 'No description');
     },
     error: function(xhr) {
       var error = xhr.responseJSON ? xhr.responseJSON.error : 'Error updating room';
       alert('Error: ' + error);
+    }
+  });
+}
+
+function editRoomDescription(roomName) {
+  // Get current description from the page
+  var description = $('.description-text').text();
+  if (description === 'No description') {
+    description = '';
+  }
+
+  $('#editRoomName').val(roomName);
+  $('#editRoomDescription').val(description);
+
+  $('#editRoomModal').modal('show');
+}
+
+function toggleRoomStatusInline(roomName, active) {
+  var formData = {
+    active: active
+  };
+
+  $.ajax({
+    url: `/admin/api/rooms/${roomName}`,
+    method: 'PUT',
+    data: JSON.stringify(formData),
+    contentType: 'application/json',
+    success: function(data) {
+      // Update the status label text
+      var statusLabel = $('#status-label');
+      if (active) {
+        statusLabel.text('Active');
+      } else {
+        statusLabel.text('Inactive');
+      }
+    },
+    error: function(xhr) {
+      var error = xhr.responseJSON ? xhr.responseJSON.error : 'Error updating room status';
+      alert('Error: ' + error);
+      // Revert the checkbox if there was an error
+      $('#room-status-checkbox').prop('checked', !active);
     }
   });
 }
@@ -615,13 +660,7 @@ function executeBulkAction(roomName) {
 
 function bulkDeleteSongs(roomName, songIds) {
   $('#bulkActionsModal').modal('hide');
-  
-  // Show progress
-  var progress = 0;
-  var total = songIds.length;
-  
-  alert(`Deleting ${total} songs...`);
-  
+
   // Delete songs one by one (could be optimized with bulk API endpoint)
   var deletePromises = songIds.map(function(songId) {
     return $.ajax({
@@ -629,10 +668,9 @@ function bulkDeleteSongs(roomName, songIds) {
       method: 'DELETE'
     });
   });
-  
+
   Promise.all(deletePromises)
     .then(function() {
-      alert(`Successfully deleted ${total} songs`);
       location.reload();
     })
     .catch(function(error) {
