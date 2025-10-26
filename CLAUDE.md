@@ -8,9 +8,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ```bash
 npm install                    # Install dependencies
 npm run minify                 # Minify JavaScript assets (required after JS changes)
-npm run import-data           # Load sample tracks from Apple Music playlists into Redis
 npm start                     # Start the application server (runs on port 8138)
-npm run local:start           # Start server in development mode with .env.local file
+npm run local:start           # Start server in development mode with .env.local file (runs on port 8138)
 ```
 
 ### Testing Commands
@@ -33,18 +32,15 @@ npm run test:full                # Complete test cycle (E2E + unit with coverage
 ```
 
 ### Code Formatting
-```bash
-# Prettier is configured via .prettierignore
-# Currently ignores: *.min.css
-```
+
+- Prettier is configured via `.prettierignore`
+- Currently ignores: *.min.css
+
 
 ### Prerequisites
 - Redis server must be running before starting the application
-- Node.js >=20.0.0 required (updated from >=10.0.0)
+- Node.js >=20.0.0 required
 - Docker (for Redis in testing)
-
-### Data Import
-The `npm run import-data` command scrapes Apple Music playlists defined in `config.json` and populates Redis with track data. This must be run at least once before the game can function.
 
 ### Testing & Debugging
 
@@ -80,7 +76,7 @@ The preferred method for interactive testing and debugging is through **Playwrig
 - **Screenshot capture**: Document issues or verify fixes visually
 
 #### Test Environment
-- **Test Redis**: Runs on Docker (docker-compose.test.yml)
+- **Test Redis**: Runs on Docker (docker-compose.redis.yml)
 - **Test Server**: Runs on port 8138 with NODE_ENV=test
 - **Test Data**: Predefined test room with sample songs and test user account
 - **Coverage Reports**: Generated in `coverage/` directory for unit tests
@@ -98,7 +94,6 @@ Use Playwright commands to systematically test the application rather than manua
 - **app.js**: Express application entry point, sets up routes, sessions, and WebSocket server
 - **lib/rooms.js**: Core game logic handling room management, game state, scoring, and player interactions
 - **lib/sparks.js**: WebSocket connection management and real-time communication
-- **config.json**: Game configuration defining rooms and their associated Apple Music playlists/artists
 
 #### Data Layer
 
@@ -121,7 +116,6 @@ Use Playwright commands to systematically test the application rather than manua
 - **lib/user.js**: User authentication, registration, password management
 - **lib/stats.js**: Player statistics tracking and leaderboards
 - **routes/**: Express route handlers for web pages and user actions
-- **scripts/load_with_complex_config.js**: Apple Music playlist scraper and data importer
 
 #### Front-end
 
@@ -165,7 +159,7 @@ redis-cli hgetall "user:username"            # View user data
 ```
 
 ### Code Changes Impact
-- **Important**: After making changes to JavaScript files, restart the server with `npm run local:start` to see changes
+- **Important**: After making changes to JavaScript backend files, restart the server with `npm run local:start` to see changes. If frontend code in `public` is changed, `npm run minify` must be executed.
 - The application caches compiled assets, so changes may not be visible until restart
 
 ### Data Service Architecture
