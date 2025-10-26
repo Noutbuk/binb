@@ -180,7 +180,7 @@ redis-cli hgetall "user:username"            # View user data
 #### Pre-Commit Checklist
 1. **Run tests**: Execute `npm run test:full` to verify both unit and E2E tests pass
 2. **Test core functionality**: Verify signup/login/rooms work using Playwright MCP
-3. **Restart server**: Run `npm run local:start` to ensure changes work properly
+3. **Restart server**: Run `npm run local:start` and `npm run minify` to ensure changes work properly
 4. **Check for errors**: Ensure no console errors or 500 responses in browser/server logs
 5. **Review staged files**: Always run `git status` and `git diff --cached` to verify what will be committed
 6. **Exclude temporary files**: Do not commit temporary files, logs, screenshots, test-results/, coverage/, or development artifacts (check `.gitignore`)
