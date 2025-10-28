@@ -74,19 +74,16 @@ block sections
                       placeholder="enter a password...")
               - if (errors.captcha)
                 .control-group.error
-                  label.control-label(for="captcha-input") Are you human?
+                  label.control-label(for="captcha-input") Registration Code
                   .controls
-                    img#captcha(src=captchaurl)
-                    input#captcha-input(type="text", name="captcha",
-                      maxlength="4")
+                    input#captcha-input(type="text", name="captcha")
                     span.help-inline #{errors.captcha}
               - else
                 .control-group
-                  label.control-label(for="captcha-input") Are you human?
+                  label.control-label(for="captcha-input") Registration Code
                   .controls
-                    img#captcha(src=captchaurl)
                     input#captcha-input(type="text", name="captcha",
-                      maxlength="4", placeholder="type what you see...")
+                      placeholder="enter registration code")
             - else
               .control-group
                 label.control-label(for="username") Name
@@ -104,11 +101,10 @@ block sections
                   input#password(type="password", name="password",
                     placeholder="enter a password...")
               .control-group
-                label.control-label(for="captcha-input") Are you human?
+                label.control-label(for="captcha-input") Registration Code
                 .controls
-                  img#captcha(src=captchaurl)
                   input#captcha-input(type="text", name="captcha",
-                    maxlength="4", placeholder="type what you see...")
+                    placeholder="enter registration code")
             button.submit-button.btn.btn-success(type="submit")
               i.icon-user.icon-white
               |  Sign up!

@@ -107,7 +107,6 @@ exports.recoverPasswd = function (req, res) {
   const captcha = new Captcha();
   req.session.captchacode = captcha.getCode();
   res.render('recoverpasswd', {
-    captchaurl: captcha.toDataURL(),
     followup: req.query.followup || '/',
     slogan: randomSlogan()
   });
@@ -147,7 +146,6 @@ exports.signup = function (req, res) {
   const captcha = new Captcha();
   req.session.captchacode = captcha.getCode();
   res.render('signup', {
-    captchaurl: captcha.toDataURL(),
     followup: req.query.followup || '/',
     slogan: randomSlogan()
   });

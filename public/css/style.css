@@ -120,12 +120,6 @@ form .clearfix {
   vertical-align: top;
   margin: 14px 0 0 15px;
 }
-#captcha-input {
-  width: 122px;
-}
-#captcha {
-  margin-right: 10px;
-}
 .page-header {
   padding: 0;
   margin: 0 0 17px 0;

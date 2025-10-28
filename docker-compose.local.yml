@@ -10,6 +10,7 @@ services:
       - NODE_ENV=production
       - REDIS_URL=redis://binb-redis-local:6379
       - SITE_SECRET=${SITE_SECRET:-shhhh-very-secret}
+      - REGISTRATION_CODE=dev-test-code
     depends_on:
       redis:
         condition: service_healthy

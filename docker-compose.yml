@@ -9,6 +9,7 @@ services:
       - REDIS_URL=redis://binb-redis:6379
       - PORT=8138
       - SITE_SECRET=${SITE_SECRET:-shhhh-very-secret}
+      - REGISTRATION_CODE=set-registration-code
     depends_on:
       redis:
         condition: service_healthy
