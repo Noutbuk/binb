@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 # Docker entrypoint script for binb
 # Handles initialization and startup sequence
