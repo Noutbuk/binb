@@ -40,7 +40,7 @@ wait_for_redis() {
     parse_redis_url
     
     while [ $attempt -le $max_attempts ]; do
-        if redis-cli -h "$REDIS_HOST" -p "$REDIS_PORT" ping > /dev/null 2>&1; then
+        if nc -z -w2 $REDIS_HOST $REDIS_PORT > /dev/null 2>&1; then
             echo "✅ Redis is ready!"
             return 0
         fi
