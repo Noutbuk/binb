@@ -2,7 +2,7 @@
 
 # Adjust NODE_VERSION as desired
 ARG NODE_VERSION=20
-FROM node:${NODE_VERSION}-slim AS base
+FROM node:${NODE_VERSION}-alpine AS base
 
 # NodeJS app lives here
 WORKDIR /app
@@ -10,21 +10,8 @@ WORKDIR /app
 # Set production environment
 ENV NODE_ENV=production
 
-# Install redis-tools for Redis connectivity checks (needed for both dev and prod)
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    redis-tools \
-#    fontconfig \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
-
 # Throw-away build stage to reduce size of final image
 FROM base AS build
-
-# Install packages needed to build node modules
-# RUN apt-get update -qq && \
-#     apt-get install -y python3 pkg-config build-essential && \
-#     apt-get clean && \
-#     rm -rf /var/lib/apt/lists/*
 
 # Install node modules
 COPY --link package.json package-lock.json* ./
@@ -56,7 +43,7 @@ COPY --link --from=build /app /app
 
 # Add healthcheck
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-    CMD /app/healthcheck.sh
+    CMD /app/scripts/healthcheck.sh
 
 # Expose port
 EXPOSE 8138
