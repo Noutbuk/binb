@@ -13,7 +13,7 @@ ENV NODE_ENV=production
 # Install redis-tools for Redis connectivity checks (needed for both dev and prod)
 RUN apt-get update && apt-get install -y --no-install-recommends \
     redis-tools \
-   fontconfig \
+#    fontconfig \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
@@ -21,10 +21,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 FROM base AS build
 
 # Install packages needed to build node modules
-RUN apt-get update -qq && \
-    apt-get install -y python3 pkg-config build-essential && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
+# RUN apt-get update -qq && \
+#     apt-get install -y python3 pkg-config build-essential && \
+#     apt-get clean && \
+#     rm -rf /var/lib/apt/lists/*
 
 # Install node modules
 COPY --link package.json package-lock.json* ./
