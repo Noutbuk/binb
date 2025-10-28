@@ -49,4 +49,4 @@ HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
 EXPOSE 8138
 
 # Start the server
-CMD ["/app/scripts/docker-entrypoint.sh"]
+ENTRYPOINT ["/app/scripts/docker-entrypoint.sh"]
