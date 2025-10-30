@@ -11,7 +11,7 @@ block sections
       button.btn.btn-mini.btn-link#edit-description-btn(title="Edit description") ✎
     .btn-group
       button.btn.btn-primary#add-song-btn Add Song
-      button.btn.btn-info#import-playlist-btn Import Playlist
+      button.btn.btn-info#import-btn Import
       button.btn.btn-warning#bulk-actions-btn Bulk Actions
 
   .row
@@ -139,15 +139,15 @@ block sections
     .modal-footer
       button.btn(data-dismiss="modal") Cancel
 
-  #importPlaylistModal.modal.hide.fade
+  #importModal.modal.hide.fade
     .modal-header
       button.close(type="button", data-dismiss="modal") ×
-      h3 Import from Apple Music Playlist
+      h3 Import from Apple Music
     .modal-body
       form#importPlaylistForm
         .control-group
-          label Apple Music Playlist URL
-          input#playlist-url(type="url", required, placeholder="https://music.apple.com/...")
+          label Apple Music playlist, album or artist URL
+          input#apple-music-url(type="url", required, placeholder="https://music.apple.com/...")
         .control-group
           label.checkbox Include additional songs from artists in playlist
             input#include-artist-songs(type="checkbox")

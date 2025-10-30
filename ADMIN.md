@@ -65,11 +65,11 @@ This document describes the new dynamic room and song management system for binb
    - Search Apple Music
    - Click "Add" for desired songs
 
-3. **Import from playlist**:
-   - Click "Import Playlist"
-   - Enter Apple Music playlist URL
-   - Optionally include additional songs from artists in playlist
-   - Configure import options (songs per artist, sorting)
+3. **Import from playlist, album or artist**:
+   - Click "Import"
+   - Enter Apple Music playlist, album or artist URL
+   - Optionally include additional songs from artists in playlist, album or artist
+   - Configure import options (songs per artist)
    - Click "Import Songs"
 
 4. **Remove songs**:

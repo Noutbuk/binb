@@ -114,9 +114,9 @@ function initRoomDetails() {
     }
   });
   
-  // Import playlist
-  $('#import-playlist-btn').click(function() {
-    $('#importPlaylistModal').modal('show');
+  // Import playlist or album
+  $('#import-btn').click(function() {
+    $('#importModal').modal('show');
   });
   
   $('#include-artist-songs').change(function() {
@@ -427,12 +427,12 @@ function addSongToRoom(roomName, songData) {
 }
 
 function importPlaylist(roomName) {
-  var playlistUrl = $('#playlist-url').val();
+  var appleMusicUrl = $('#apple-music-url').val();
   var includeArtistSongs = $('#include-artist-songs').is(':checked');
   var songsPerArtist = parseInt($('#songs-per-artist').val());
   var sortBy = $('#sort-by').val();
   
-  if (!playlistUrl) {
+  if (!appleMusicUrl) {
     alert('Please enter a playlist URL');
     return;
   }
@@ -442,7 +442,7 @@ function importPlaylist(roomName) {
   $('#import-submit').prop('disabled', true);
   
   var importData = {
-    playlistUrl: playlistUrl,
+    appleMusicUrl: appleMusicUrl,
     includeArtistSongs: includeArtistSongs,
     songsPerArtist: songsPerArtist,
     sortBy: sortBy
@@ -456,7 +456,7 @@ function importPlaylist(roomName) {
     success: function(data) {
       $('#import-progress').hide();
       $('#import-submit').prop('disabled', false);
-      $('#importPlaylistModal').modal('hide');
+      $('#importModal').modal('hide');
       
       alert(`Import completed!\nImported: ${data.imported} songs\nAdded: ${data.added}\nSkipped: ${data.skipped}\nErrors: ${data.errors}`);
       location.reload();

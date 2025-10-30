@@ -254,22 +254,22 @@ router.delete('/api/rooms/:roomName/songs/:songId', requireAdmin, async (req, re
   }
 });
 
-// Import from Apple Music playlist
+// Import from Apple Music
 router.post('/api/rooms/:roomName/import', requireAdmin, async (req, res, next) => {
   try {
     const { roomName } = req.params;
-    const { playlistUrl, includeArtistSongs = false, songsPerArtist = 1, sortBy = 'popular' } = req.body;
+    const { appleMusicUrl, includeArtistSongs = false, songsPerArtist = 1, sortBy = 'popular' } = req.body;
 
-    if (!playlistUrl) {
-      return res.status(400).json({ error: 'Playlist URL is required' });
+    if (!appleMusicUrl) {
+      return res.status(400).json({ error: 'Apple Music URL is required' });
     }
 
-    if (!appleMusicImporter.isValidAppleMusicUrl(playlistUrl)) {
+    if (!appleMusicImporter.isValidAppleMusicUrl(appleMusicUrl)) {
       return res.status(400).json({ error: 'Invalid Apple Music URL' });
     }
 
-    // Import songs from playlist
-    const importResult = await appleMusicImporter.importFromPlaylist(playlistUrl, {
+    // Import songs
+    const importResult = await appleMusicImporter.importFromPlaylist(appleMusicUrl, {
       includeArtistSongs,
       songsPerArtist,
       sortBy
