@@ -5,14 +5,16 @@ const errorHandler = require('./lib/middleware/error-handler');
 const express = require('express');
 const favicon = require('serve-favicon');
 const http = require('http');
-const port = require('./config').port;
+const port = process.env.PORT || 8138;
 const session = require('express-session');
 const RedisStore = require('connect-redis')(session);
 const secret = process.env.SITE_SECRET || 'shhhh, very secret';
 const cookieParser = require('cookie-parser')(secret);
 const site = require('./routes/site');
 const urlencoded = require('body-parser').urlencoded;
+const json = require('body-parser').json;
 const user = require('./routes/user');
+const admin = require('./routes/admin');
 const { usersClient } = require('./lib/redis-clients');
 
 /**
@@ -31,6 +33,7 @@ app.use('/static', express.static(pub, { maxAge: 2419200000 })); // 4 weeks = 24
 app.use(favicon(pub + '/img/favicon.ico', { maxAge: 2419200000 }));
 app.use(banHandler);
 app.use(urlencoded({ extended: false }));
+app.use(json());
 app.use(cookieParser);
 app.use(
   session({
@@ -47,7 +50,11 @@ app.use(
   })
 );
 
+// Add admin status to all requests
+//app.use(addAdminStatus);
+
 // Routes
+app.use('/admin', admin);
 app.get('/', site.home);
 app.get('/artworks', site.artworks);
 app.get('/changepasswd', site.validationErrors, site.changePasswd);
@@ -83,13 +90,20 @@ app.use(errorHandler);
  * Setting up the rooms.
  */
 
-require('./lib/rooms')({
-  parser: cookieParser,
-  server: server,
-  sessionstore: sessionstore
-});
+async function initializeServer() {
+  await require('./lib/rooms')({
+    parser: cookieParser,
+    server: server,
+    sessionstore: sessionstore
+  });
 
-// Begin accepting connections
-server.listen(port, function () {
-  console.info('binb server listening on port ' + port);
+  // Begin accepting connections
+  server.listen(port, function () {
+    console.info('binb server listening on port ' + port);
+  });
+}
+
+initializeServer().catch(error => {
+  console.error('Failed to initialize server:', error);
+  process.exit(1);
 });

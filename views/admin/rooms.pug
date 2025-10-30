@@ -1,0 +1,125 @@
+extends layout
+
+block title
+  title Room Management - binb
+
+block sections
+  .hero-unit
+    h1 Room Management
+    p Manage all game rooms and their configurations
+    button.btn.btn-large.btn-primary#create-room-btn Create New Room
+  
+  .row
+    .span12
+      .well
+        .row-fluid
+          .span6
+            input#search-input.input-large(type="text", placeholder="Search rooms...")
+          .span6.text-right
+            .btn-group
+              button.btn#filter-all All
+              button.btn#filter-active Active
+              button.btn#filter-inactive Inactive
+  
+  .row
+    .span12
+      if rooms && rooms.length > 0
+        table.table.table-striped#rooms-table
+          thead
+            tr
+              th Room Name
+              th Description
+              th Songs
+              th Status
+              th Created
+              th Actions
+          tbody
+            each room in rooms
+              tr(data-room-name=room.name, data-active=`${room.active}`)
+                td
+                  a(href=`/admin/rooms/${room.name}`) 
+                    strong #{room.name}
+                td #{room.description || 'No description'}
+                td
+                  span.badge.badge-info #{room.songCount}
+                td
+                  if room.active
+                    span.label.label-success Active
+                  else
+                    span.label.label-warning Inactive
+                td #{new Date(room.createdAt).toLocaleDateString()}
+                td
+                  .btn-group
+                    a.btn.btn-mini.btn-primary(href=`/admin/rooms/${room.name}`) Manage
+                    button.btn.btn-mini.btn-info.edit-room-btn(data-room=room.name) Edit
+                    if room.active
+                      button.btn.btn-mini.btn-warning.deactivate-room-btn(data-room=room.name) Deactivate
+                    else
+                      button.btn.btn-mini.btn-success.activate-room-btn(data-room=room.name) Activate
+                    button.btn.btn-mini.btn-danger.delete-room-btn(data-room=room.name) Delete
+      else
+        .alert.alert-info
+          strong No rooms found.
+          p Get started by creating your first room.
+
+  // Create Room Modal
+  #createRoomModal.modal.hide.fade
+    .modal-header
+      button.close(type="button", data-dismiss="modal") ×
+      h3 Create New Room
+    .modal-body
+      form#createRoomForm
+        .control-group
+          label.control-label(for="roomName") Room Name
+          .controls
+            input#roomName(type="text", name="name", required, pattern="[a-zA-Z0-9-_]+", title="Only letters, numbers, hyphens and underscores allowed")
+            span.help-block Only letters, numbers, hyphens and underscores allowed
+        .control-group
+          label.control-label(for="roomDescription") Description
+          .controls
+            textarea#roomDescription(name="description", rows="3", placeholder="Optional description...")
+        .control-group
+          .controls
+            label.checkbox  Make room active immediately
+              input(type="checkbox", name="active", checked)
+    .modal-footer
+      button.btn(data-dismiss="modal") Cancel
+      button.btn.btn-primary#createRoomSubmit(type="submit") Create Room
+
+  // Edit Room Modal
+  #editRoomModal.modal.hide.fade
+    .modal-header
+      button.close(type="button", data-dismiss="modal") ×
+      h3 Edit Room
+    .modal-body
+      form#editRoomForm
+        input#editRoomName(type="hidden", name="roomName")
+        .control-group
+          label.control-label(for="editRoomDescription") Description
+          .controls
+            textarea#editRoomDescription(name="description", rows="3")
+        .control-group
+          .controls
+            label.checkbox Active
+              input#editRoomActive(type="checkbox", name="active")
+    .modal-footer
+      button.btn(data-dismiss="modal") Cancel
+      button.btn.btn-primary#editRoomSubmit(type="submit") Save Changes
+
+  // Delete Confirmation Modal
+  #deleteRoomModal.modal.hide.fade
+    .modal-header
+      button.close(type="button", data-dismiss="modal") ×
+      h3 Delete Room
+    .modal-body
+      p Are you sure you want to delete this room? This action cannot be undone.
+      p
+        strong Room: 
+        span#deleteRoomName
+      p
+        strong Songs: 
+        span#deleteRoomSongs
+        |  songs will be deleted
+    .modal-footer
+      button.btn(data-dismiss="modal") Cancel
+      button.btn.btn-danger#deleteRoomConfirm Delete Room

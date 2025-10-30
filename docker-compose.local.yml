@@ -1,0 +1,52 @@
+services:
+  app:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    container_name: binb-app-local
+    ports:
+      - "8138:8138"
+    environment:
+      - NODE_ENV=production
+      - REDIS_URL=redis://binb-redis-local:6379
+      - SITE_SECRET=${SITE_SECRET:-shhhh-very-secret}
+      - REGISTRATION_CODE=dev-test-code
+    depends_on:
+      redis:
+        condition: service_healthy
+    networks:
+      - binb-network
+    restart: unless-stopped
+    # Remove volume mount in production to use built image
+    # volumes:
+    #   - .:/app
+    healthcheck:
+      test: ["CMD", "/app/scripts/healthcheck.sh"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  redis:
+    image: redis:7-alpine
+    container_name: binb-redis-local
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes --maxmemory 512mb --maxmemory-policy allkeys-lru
+    volumes:
+      - redis_local_data:/data
+    networks:
+      - binb-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
+
+volumes:
+  redis_local_data:
+
+networks:
+  binb-network:
+    driver: bridge

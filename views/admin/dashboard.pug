@@ -1,0 +1,59 @@
+extends layout
+
+block title
+  title Admin Dashboard - binb
+
+block sections
+  .hero-unit
+    h1 Admin Dashboard
+    p Welcome to the binb administration panel
+  
+  .row
+    .span4
+      .well
+        h3 #{totalRooms}
+        p Total Rooms
+        a.btn.btn-primary(href="/admin/rooms") Manage Rooms
+    
+    .span4
+      .well
+        h3 #{totalSongs}
+        p Total Songs
+    
+    .span4
+      .well
+        h3 #{activeRooms}
+        p Active Rooms
+  
+  .row
+    .span12
+      h2 Recent Rooms
+      if rooms && rooms.length > 0
+        table.table.table-striped
+          thead
+            tr
+              th Room Name
+              th Description
+              th Songs
+              th Status
+              th Last Updated
+              th Actions
+          tbody
+            each room in rooms.slice(0, 10)
+              tr
+                td
+                  a(href=`/admin/rooms/${room.name}`) #{room.name}
+                td #{room.description || 'No description'}
+                td #{room.songCount}
+                td
+                  if room.active
+                    span.label.label-success Active
+                  else
+                    span.label.label-warning Inactive
+                td #{new Date(room.updatedAt).toLocaleDateString()}
+                td
+                  a.btn.btn-mini.btn-primary(href=`/admin/rooms/${room.name}`) Manage
+      else
+        .alert.alert-info
+          strong No rooms found.
+          p Get started by creating your first room.

@@ -13,6 +13,7 @@ html
     link(href="//fonts.googleapis.com/css?family=Droid+Sans:400,700", rel="stylesheet")
     link(href="/static/css/bootstrap.min.css", rel="stylesheet")
     link(href="/static/css/style.css", rel="stylesheet")
+    block head
   body
     .navbar.navbar-inverse.navbar-fixed-top
       .navbar-inner
@@ -21,6 +22,10 @@ html
             a.brand(href="/")
               .icons.logo #{slogan}
           block nav
+            if isAdmin
+              ul.nav.pull-right
+                li
+                  a(href="/admin") Admin Panel
     .container
       block sections
       footer

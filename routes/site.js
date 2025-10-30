@@ -1,13 +1,13 @@
 'use strict';
 
 const Captcha = require('../lib/captcha');
-const config = require('../config');
-const { songsClient } = require('../lib/redis-clients');
+const dataService = require('../lib/data-service');
 const http = require('http');
 const parallel = require('async/parallel');
 const randInt = require('../lib/prng').randInt;
 const randomSlogan = require('../lib/utils').randomSlogan;
 const rooms = require('../lib/rooms').rooms;
+const roomManager = require('../lib/services/room-manager');
 
 /**
  * Generate a sub-task.
@@ -16,11 +16,16 @@ const rooms = require('../lib/rooms').rooms;
 const subTask = function (genre) {
   return function (callback) {
     const index = randInt(rooms[genre].trackscount);
-    songsClient.zrange([genre, index, index], function (err, res) {
+    dataService.songs.getRoomTrackByIndex(genre, index, function (err, res) {
       if (err) {
         return callback(err);
       }
-      songsClient.hget(['song:' + res[0], 'artworkUrl100'], callback);
+      dataService.songs.getSongMetadata(res[0], ['artworkUrl100'], function (err, data) {
+        if (err) {
+          return callback(err);
+        }
+        callback(null, data[0]); // getSongMetadata returns array for specific fields
+      });
     });
   };
 };
@@ -29,23 +34,32 @@ const subTask = function (genre) {
  * Extract at random in each room, some album covers and return the result as a JSON.
  */
 
-exports.artworks = function (req, res, next) {
-  const tasks = {};
-  config.rooms.forEach(function (room) {
-    tasks[room] = function (callback) {
-      const subtasks = [];
-      for (let i = 0; i < 6; i++) {
-        subtasks.push(subTask(room));
+exports.artworks = async function (req, res, next) {
+  try {
+    const allRooms = await roomManager.getAllRooms();
+    const activeRooms = allRooms.filter(room => room.active);
+    const roomNames = activeRooms.map(room => room.name);
+    
+    const tasks = {};
+    roomNames.forEach(function (room) {
+      tasks[room] = function (callback) {
+        const subtasks = [];
+        for (let i = 0; i < 6; i++) {
+          subtasks.push(subTask(room));
+        }
+        parallel(subtasks, callback);
+      };
+    });
+    parallel(tasks, function (err, results) {
+      if (err) {
+        return next(err);
       }
-      parallel(subtasks, callback);
-    };
-  });
-  parallel(tasks, function (err, results) {
-    if (err) {
-      return next(err);
-    }
-    res.send(results);
-  });
+      res.send(results);
+    });
+  } catch (error) {
+    console.error('Error loading rooms for artworks:', error);
+    next(error);
+  }
 };
 
 exports.changePasswd = function (req, res) {
@@ -59,12 +73,27 @@ exports.changePasswd = function (req, res) {
   });
 };
 
-exports.home = function (req, res) {
-  res.render('home', {
-    loggedin: req.session.user,
-    rooms: config.rooms,
-    slogan: randomSlogan()
-  });
+exports.home = async function (req, res) {
+  try {
+    // Get actual rooms from Redis instead of static config
+    const allRooms = await roomManager.getAllRooms();
+    const activeRooms = allRooms.filter(room => room.active);
+    const roomNames = activeRooms.map(room => room.name);
+    
+    res.render('home', {
+      loggedin: req.session.user,
+      rooms: roomNames,
+      slogan: randomSlogan()
+    });
+  } catch (error) {
+    console.error('Error loading rooms:', error);
+    // Fallback to empty rooms array if there's an error
+    res.render('home', {
+      loggedin: req.session.user,
+      rooms: [],
+      slogan: randomSlogan()
+    });
+  }
 };
 
 exports.login = function (req, res) {
@@ -78,7 +107,6 @@ exports.recoverPasswd = function (req, res) {
   const captcha = new Captcha();
   req.session.captchacode = captcha.getCode();
   res.render('recoverpasswd', {
-    captchaurl: captcha.toDataURL(),
     followup: req.query.followup || '/',
     slogan: randomSlogan()
   });
@@ -91,14 +119,25 @@ exports.resetPasswd = function (req, res) {
   });
 };
 
-exports.room = function (req, res) {
-  if (~config.rooms.indexOf(req.params.room)) {
-    return res.render('room', {
-      loggedin: req.session.user,
-      roomname: req.params.room,
-      rooms: config.rooms,
-      slogan: randomSlogan()
-    });
+exports.room = async function (req, res) {
+  try {
+    // Check if room actually exists in Redis
+    const roomExists = await roomManager.roomExists(req.params.room);
+    if (roomExists) {
+      // Get all rooms for navigation
+      const allRooms = await roomManager.getAllRooms();
+      const activeRooms = allRooms.filter(room => room.active);
+      const roomNames = activeRooms.map(room => room.name);
+      
+      return res.render('room', {
+        loggedin: req.session.user,
+        roomname: req.params.room,
+        rooms: roomNames,
+        slogan: randomSlogan()
+      });
+    }
+  } catch (error) {
+    console.error('Error checking room existence:', error);
   }
   res.status(404).send(http.STATUS_CODES[404]);
 };
@@ -107,7 +146,6 @@ exports.signup = function (req, res) {
   const captcha = new Captcha();
   req.session.captchacode = captcha.getCode();
   res.render('signup', {
-    captchaurl: captcha.toDataURL(),
     followup: req.query.followup || '/',
     slogan: randomSlogan()
   });
